@@ -1,0 +1,26 @@
+├── backend/                        # Backend folder (FastAPI)
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py                 # FastAPI app entry point
+│   │   ├── controllers/            # API routes (presentation layer)
+│   │   │   ├── __init__.py
+│   │   │   ├── user_controller.py  # User-related API routes
+│   │   │   └── item_controller.py  # Item-related API routes
+│   │   ├── domain/                 # Core business entities (domain layer)
+│   │   │   ├── __init__.py
+│   │   │   └── entities.py         # Business models (User, Item, etc.)
+│   │   ├── services/            # Use cases and business logic (application layer)
+│   │   │   ├── __init__.py
+│   │   │   ├── services.py         # Business logic for each use case
+│   │   │   └── user_service.py     # Example use case for user-related logic
+│   │   ├── infrastructure/         # Data access (infrastructure layer)
+│   │   │   ├── __init__.py
+│   │   │   ├── repositories.py     # Repositories for database access
+│   │   │   └── db.py               # Database connection configuration
+│   │   ├── schemas/                # Pydantic models for request/response validation
+│   │   │   ├── __init__.py
+│   │   │   ├── user.py             # User schema
+│   │   │   └── item.py             # Item schema
+│   ├── requirements.txt            # Python dependencies (e.g., FastAPI, SQLAlchemy, etc.)
+│   └── Dockerfile                  # Dockerfile for backend deployment
+│
