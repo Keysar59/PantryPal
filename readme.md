@@ -1,1 +1,3 @@
-hello
+[project description](https://docs.google.com/document/d/19M8ywllwez9fNs2aGKwM9MGDNR1XycznjlOG4QoQpbU/edit?usp=sharing)
+
+PantryPal is an innovative and user-friendly pantry management system designed to help individuals and households efficiently track and organize their pantry products. The goal of PantryPal is to provide a seamless experience for managing food supplies, reducing food waste, improving inventory visibility, and ensuring that users are always aware of what they have in stock.
