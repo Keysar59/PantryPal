@@ -23,4 +23,3 @@
 │   │   │   └── item.py             # Item schema
 │   ├── requirements.txt            # Python dependencies (e.g., FastAPI, SQLAlchemy, etc.)
 │   └── Dockerfile                  # Dockerfile for backend deployment
-│
