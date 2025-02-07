@@ -8,7 +8,7 @@ class DataFetchStrategyFactory:
         if strategy_type.lower() == "webscraper":
 
             return WebsiteScraper()
-        #TODO: add the parser with goverment site
+        #TODO: add the parser - goverment site
         else:
             raise ValueError(f"Unknown strategy type: {strategy_type}")
 
