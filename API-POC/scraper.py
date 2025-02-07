@@ -1,11 +1,9 @@
 import requests
+from strategies import DataFetchStrategy
 from typing import Optional, Dict, Any
 import json
-import sys
 
-sys.stdout.reconfigure(encoding='utf-8')
-
-class WebsiteScraper:
+class WebsiteScraper(DataFetchStrategy):
     _instance = None
     
     def __new__(cls):
@@ -80,7 +78,4 @@ class WebsiteScraper:
             print(f"Error parsing data: {str(e)}")
             return {}
 
-scraper = WebsiteScraper()
-data = scraper.fetch_data("7290004127800")
-parsed_data = scraper.parse_product_data(data)
-print(json.dumps(parsed_data, ensure_ascii=False, indent=2))
+
