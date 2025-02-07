@@ -15,9 +15,11 @@ class AuthenticationService:
         """
         Creates a new user and returns a JWT token.
         """
+        print("hello im service")
         user = self.user_repository.create_user(user_data)
         if not user:
             return None, None
+
 
         token = AuthenticationService.create_token(user.id)
         return user, token
@@ -28,7 +30,7 @@ class AuthenticationService:
         """
         payload = {
             "sub": user_id,
-            "exp": datetime.datetime.utcnow() + datetime.timedelta(days=7)
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(weeks=20)
         }
         return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
