@@ -14,21 +14,23 @@ def signup(user_data: UserSignup, response: Response,
     """
     print(user_data)
     user, token = authentication_service.signup_user(user_data)
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User could not be created"
+        )
 
-    # if not user:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_400_BAD_REQUEST,
-    #         detail="User could not be created"
-    #     )
+    payload = authentication_service.create_token(user.id)
 
-    # Set cookie (token will expire in 7 days)
     response.set_cookie(
         key="session_token",
-        value="testtoken12",
+        value=payload,
         httponly=True,  # Prevent JavaScript access
         max_age=int(timedelta(weeks=20).total_seconds()),
         samesite="Lax",  # Protect against CSRF
         secure=True  # Send only over HTTPS
+
     )
 
     return {"message": "User created successfully", "user": "testuser"}
