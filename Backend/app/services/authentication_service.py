@@ -2,7 +2,9 @@ import jwt
 import datetime
 from typing import Optional
 from app.domain.entities.user import User
+from app.schemas.user_schema import UserSignup
 from app.domain.repositories_interfaces.user_repository_interface import UserRepositoryInterface
+
 
 SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
@@ -11,27 +13,36 @@ class AuthenticationService:
     def __init__(self, user_repository: UserRepositoryInterface):
         self.user_repository = user_repository
 
-    def signup_user(self, user_data) -> Optional[tuple]:
+    def signup_user(self, user_data: UserSignup) -> Optional[tuple]:
         """
         Creates a new user and returns a JWT token.
         """
-        print("hello im service")
+        if (',' in user_data.email or ',' in user_data.password or user_data.email == "" or user_data.password == "" or user_data.email == None or user_data.password == None):
+            return None, None
+        user = self.user_repository.get_user_by_email(user_data.email)
+        if user:
+            return None, None
+
+
         user = self.user_repository.create_user(user_data)
         if not user:
             return None, None
 
 
-        token = AuthenticationService.create_token(user.id)
+        token = self.create_token(user.email)
         return user, token
 
-    def create_token(self, user_id: int) -> str:
+
+    def create_token(self, user_email: str) -> str:
         """
         Generates a JWT token with user ID.
         """
+
         payload = {
-            "sub": user_id,
+            "sub": user_email,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(weeks=20)
         }
+
         return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
     def verify_token(self, token: str) -> Optional[User]:
@@ -40,9 +51,10 @@ class AuthenticationService:
         """
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            user_id = payload.get("sub")
-            return self.user_repository.get_user_by_id(user_id)
+            user_email = payload.get("sub")
+            return self.user_repository.get_user_by_email(user_email)
         
+
         except jwt.ExpiredSignatureError:
             return None
         except jwt.InvalidTokenError:
