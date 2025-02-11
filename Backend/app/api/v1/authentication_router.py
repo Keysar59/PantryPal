@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Response, HTTPException, status, Depends
 from app.services.authentication_service import AuthenticationService
 from datetime import timedelta
-from app.schemas.user_schema import UserSignup
+from app.domain.entities.user import User
 from fastapi import Request
 from app.infrastructures.dependency_injection import get_authentication_service
 router = APIRouter()
 
 @router.post("/signup")
-def signup(user_data: UserSignup, response: Response, 
+def signup(user_data: User, response: Response, 
            authentication_service: AuthenticationService = Depends(get_authentication_service)):
     """
     Handles user signup and sets a session cookie.

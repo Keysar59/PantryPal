@@ -2,7 +2,6 @@ import jwt as pyjwt
 import datetime
 from typing import Optional
 from app.domain.entities.user import User
-from app.schemas.user_schema import UserSignup
 from app.domain.repositories_interfaces.user_repository_interface import UserRepositoryInterface
 
 
@@ -13,7 +12,7 @@ class AuthenticationService:
     def __init__(self, user_repository: UserRepositoryInterface):
         self.user_repository = user_repository
 
-    def signup_user(self, user_data: UserSignup) -> Optional[tuple]:
+    def signup_user(self, user_data: User) -> Optional[tuple]:
 
         if (',' in user_data.email or ',' in user_data.password or user_data.email == "" or user_data.password == "" or user_data.email == None or user_data.password == None):
             print("User data is invalid")
@@ -32,7 +31,7 @@ class AuthenticationService:
         return user, token
     
     # login user returns token
-    def login_user(self, user_data: UserSignup) -> Optional[str]:
+    def login_user(self, user_data: User) -> Optional[str]:
         user = self.user_repository.get_user_by_email(user_data.email)
         if not user:
             print("User does not exist")
