@@ -14,11 +14,6 @@ class UserRepositoryTxt(UserRepositoryInterface):
             with open(self.file_path, "w") as file:
                 file.write("")
         
-
-
-
-
-
     def get_user_by_email(self, email: str):
         with open(self.file_path, "r") as file:
             for line in file:

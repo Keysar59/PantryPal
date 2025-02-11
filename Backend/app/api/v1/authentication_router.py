@@ -40,7 +40,6 @@ def signup(user_data: UserSignup, response: Response,
 def check_status(request: Request):
     token = request.cookies.get("session_token")
     #check if token is valid
-    
     if not token:
         return {"authorized": False}
     return {"authorized": True}

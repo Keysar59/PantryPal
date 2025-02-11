@@ -14,9 +14,7 @@ class AuthenticationService:
         self.user_repository = user_repository
 
     def signup_user(self, user_data: UserSignup) -> Optional[tuple]:
-        """
-        Creates a new user and returns a JWT token.
-        """
+
         if (',' in user_data.email or ',' in user_data.password or user_data.email == "" or user_data.password == "" or user_data.email == None or user_data.password == None):
             print("User data is invalid")
             return None, None
@@ -32,20 +30,26 @@ class AuthenticationService:
 
         token = self.create_token(user.email)
         return user, token
+    
+    # login user returns token
+    def login_user(self, user_data: UserSignup) -> Optional[str]:
+        user = self.user_repository.get_user_by_email(user_data.email)
+        if not user:
+            print("User does not exist")
+            return None
+        token = self.create_token(user.email)
+        return token
 
 
     def create_token(self, user_email: str) -> str:
         """
         Generates a JWT token with user ID.
         """
-
         payload = {
             "sub": user_email,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(weeks=20)
         }
-
         return pyjwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-
 
     def verify_token(self, token: str) -> Optional[User]:
         """
@@ -54,10 +58,11 @@ class AuthenticationService:
         try:
             payload = pyjwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             user_email = payload.get("sub")
-            return self.user_repository.get_user_by_email(user_email)
+            return self.user_repository.user_exists(user_email)
         
-
         except pyjwt.ExpiredSignatureError:
+            print("Token expired")
             return None
         except pyjwt.InvalidTokenError:
+            print("Invalid token")
             return None
