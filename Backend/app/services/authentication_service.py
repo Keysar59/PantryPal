@@ -1,8 +1,7 @@
-import jwt
+import jwt as pyjwt
 import datetime
 from typing import Optional
 from app.domain.entities.user import User
-from app.schemas.user_schema import UserSignup
 from app.domain.repositories_interfaces.user_repository_interface import UserRepositoryInterface
 
 
@@ -13,49 +12,56 @@ class AuthenticationService:
     def __init__(self, user_repository: UserRepositoryInterface):
         self.user_repository = user_repository
 
-    def signup_user(self, user_data: UserSignup) -> Optional[tuple]:
-        """
-        Creates a new user and returns a JWT token.
-        """
+    def signup_user(self, user_data: User) -> Optional[tuple]:
+
         if (',' in user_data.email or ',' in user_data.password or user_data.email == "" or user_data.password == "" or user_data.email == None or user_data.password == None):
+            print("User data is invalid")
             return None, None
         user = self.user_repository.get_user_by_email(user_data.email)
         if user:
+            print("User already exists")
             return None, None
-
 
         user = self.user_repository.create_user(user_data)
         if not user:
+            print("User could not be created (db)")
             return None, None
-
 
         token = self.create_token(user.email)
         return user, token
+    
+    # login user returns token
+    def login_user(self, user_data: User) -> Optional[str]:
+        user = self.user_repository.get_user_by_email(user_data.email)
+        if not user:
+            print("User does not exist")
+            return None
+        token = self.create_token(user.email)
+        return token
 
 
     def create_token(self, user_email: str) -> str:
         """
         Generates a JWT token with user ID.
         """
-
         payload = {
             "sub": user_email,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(weeks=20)
         }
-
-        return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+        return pyjwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
     def verify_token(self, token: str) -> Optional[User]:
         """
         Verifies the JWT token and returns the user if valid.
         """
         try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            payload = pyjwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             user_email = payload.get("sub")
-            return self.user_repository.get_user_by_email(user_email)
+            return self.user_repository.user_exists(user_email)
         
-
-        except jwt.ExpiredSignatureError:
+        except pyjwt.ExpiredSignatureError:
+            print("Token expired")
             return None
-        except jwt.InvalidTokenError:
+        except pyjwt.InvalidTokenError:
+            print("Invalid token")
             return None
