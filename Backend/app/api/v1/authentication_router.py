@@ -18,10 +18,10 @@ def signup(user_data: UserSignup, response: Response,
     if not user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User could not be created"
+            detail="User could not be created (user null)"
         )
 
-    payload = authentication_service.create_token(user.id)
+    payload = authentication_service.create_token(user.email)
 
     response.set_cookie(
         key="session_token",
