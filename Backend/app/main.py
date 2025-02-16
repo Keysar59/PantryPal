@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from app.api.v1.authentication_router import router as authentication_router
-# from app.api.v1.group_management_router import router as group_management_router
+from app.api.v1.group_management_router import router as group_management_router
 # from app.api.v1.list_management_router import router as list_management_router
 # from app.api.v1.products_fetching_router import router as product_fetching_router
 
@@ -28,8 +28,8 @@ app.add_middleware(
 def read_root():
     return {"Hello": "World"}
 
-app.include_router(authentication_router, prefix="/api/v1/auth")
-# app.include_router(group_management_router, prefix="/api/v1/group")
+# app.include_router(authentication_router, prefix="/api/v1/auth")
+app.include_router(group_management_router, prefix="/api/v1/group")
 # app.include_router(list_management_router, prefix="/api/v1/list")
 # app.include_router(product_fetching_router, prefix="/api/v1/product_fetching")
 
