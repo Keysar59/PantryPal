@@ -25,5 +25,6 @@ class GroupRepositoryInterface:
     def get_group_name_by_id(self, group_id: int) -> str:
         pass
 
-    # TODO: add get_list_ids_by_group_id
+    def get_list_ids_by_group_id(self, group_id: int) -> list[int]:
+        pass
 

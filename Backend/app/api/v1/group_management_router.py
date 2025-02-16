@@ -123,3 +123,18 @@ def get_group_name_by_id(group_id: int,
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Group could not be found")
 
     return {"message": "Group name retrieved successfully", "group_name": group_name}
+
+@router.get("/get_list_ids_by_group_id")
+def get_list_ids_by_group_id(group_id: int,
+                            group_service: GroupManagementService = Depends(get_group_management_service)):
+    """
+    Gets the ids of the lists in a group.
+    :param group_id: The id of the group.
+    """
+    list_ids = group_service.get_list_ids_by_group_id(group_id)
+
+    if not list_ids:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No lists were found")
+
+    return {"message": "Lists retrieved successfully", "pantry_list_id": list_ids[0], "default_list_id": list_ids[1], "shopping_list_id": list_ids[2]}
+

@@ -158,8 +158,13 @@ class GroupRepositoryTxt(GroupRepositoryInterface):
     def get_group_name_by_id(self, group_id: int) -> str:
         with open(self.file_path, "r") as file:
             for line in file:
-                if str(group_id) == line.split(',')[0]:
+                if str(group_id) == line.strip("\n").split(',')[0]:
                     return line.split(',')[1]
         return None
 
-
+    def get_list_ids_by_group_id(self, group_id: int) -> list[int]:
+        with open(self.file_path, "r") as file:
+            for line in file:
+                if str(group_id) == line.split(',')[0]:
+                    return line.strip("\n").split(',')[4:]
+        return []

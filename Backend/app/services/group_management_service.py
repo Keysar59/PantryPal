@@ -97,3 +97,11 @@ class GroupManagementService:
         """
 
         return self.group_repository.get_group_name_by_id(group_id)
+
+    def get_list_ids_by_group_id(self, group_id: int) -> list[int]:
+        """
+        Gets the ids of the lists in a group.
+        :param group_id: The id of the group.
+        """
+
+        return self.group_repository.get_list_ids_by_group_id(group_id)
