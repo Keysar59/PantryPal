@@ -1,2 +1,0 @@
-1,test_group,[;firstuser;seconduser],[;firstuser],0,0,0
-2,my new group,[thisismyemail@gmail.com],[thisismyemail@gmail.com],0,0,0
