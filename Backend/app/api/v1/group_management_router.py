@@ -18,7 +18,7 @@ def create_group(group_name: str, user_email: str,
 
     if group_id == -1:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Group could not be created")
-        
+
     return {"message": "Group created successfully", "group_id": group_id}
 
 @router.post("/delete_group")
@@ -65,6 +65,47 @@ def leave_group(group_id: int, user_email: str,
 
     return {"message": "User left group successfully"}
 
+@router.post("/promote_user")
+def promote_user(group_id: int, user_email: str,
+                 group_service: GroupManagementService = Depends(get_group_management_service)):
+    """
+    Promotes a user to admin.
+    :param group_id: The id of the group.
+    :param user_email: The email of the user to promote to admin.
+    """
+    success = group_service.promote_user_to_admin(group_id, user_email)
+
+    if not success:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User could not be promoted to admin")
+
+    return {"message": "User promoted to admin successfully"}
 
 
+@router.post("/demote_user")
+def demote_user(group_id: int, user_email: str,
+                group_service: GroupManagementService = Depends(get_group_management_service)):
+    """
+    Demotes a user from admin to user.
+    :param group_id: The id of the group.
+    :param user_email: The email of the admin to demote to user.
+    """
+    success = group_service.demote_admin_to_user(group_id, user_email)
 
+    if not success:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User could not be demoted from admin to user")
+
+    return {"message": "Admin demoted to user successfully"}
+
+@router.get("/get_groups_by_user_email")
+def get_groups_by_user_email(user_email: str,
+                             group_service: GroupManagementService = Depends(get_group_management_service)):
+    """
+    Gets all groups a user is in.
+    :param user_email: The email of the user.
+    """
+    groups = group_service.get_groups_by_user_email(user_email)
+
+    if not groups:
+        return {"message": "No groups were found", "groups": groups}
+
+    return {"message": "Groups retrieved successfully", "groups": groups}
