@@ -22,7 +22,7 @@ def main():
     print("\n--------------------------------\n")
 
     print("\nTesting get_products_by_category:")
-    category_result = client.get_products_by_category("chocolates", fields=["code", "product_name"])
+    category_result = client.get_products_by_category("chocolates")
     if category_result and "products" in category_result and len(category_result["products"]) > 0:
         print(f"First product by category: {category_result['products'][0]}")
     else:

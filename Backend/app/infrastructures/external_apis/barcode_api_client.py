@@ -3,7 +3,12 @@ import backoff
 from typing import Dict, Any
 #url for name: https://world.openfoodfacts.org/cgi/search.pl?search_terms=<search_term>&action=process&json=true - free text search
 #other url for name: https://world.openfoodfacts.org/cgi/search.pl?action=process&search_terms=chocolate&json=1 - free text search
-#other url for name: https://world.openfoodfacts.org/api/v2/search?categories_tags_en=chocolates&fields=code,product_name - not free text search but can be used to get specific categories/fields
+
+#other url for name: https://world.openfoodfacts.org/cgi/search.pl?action=process&search_terms=chocolate&json=1&fields=product_name,code,image_url
+
+
+#url for categories and only categories: https://world.openfoodfacts.org/api/v2/search?categories_tags_en=chocolates&fields=code,product_name - not free text search but can be used to get specific categories/fields
+
 #url for barcode: https://world.openfoodfacts.org/api/v2/product/<barcode>.json
 #other option: https://world.openfoodfacts.org/api/v0/product/<barcode>.json
 #example of barcode: 7290004127800 - milk
@@ -12,14 +17,14 @@ class BarcodeApiClient(requests.Session):
     def __init__(self):
         super().__init__()
         self.base_url = "https://world.openfoodfacts.org"
-
+    
     @backoff.on_exception(
         backoff.expo,
         (requests.exceptions.RequestException, requests.exceptions.HTTPError),
         max_tries=5,
         giveup=lambda e: isinstance(e, requests.exceptions.HTTPError) and e.response.status_code not in [429, 500, 502, 503, 504]
     )
-    def get_product_by_name(self, name: str) -> Dict[str, Any]:
+    def get_product_by_name(self, name: str, fields: list[str] = ["product_name", "product_name_en", "code", "image_url"]) -> Dict[str, Any]:
         """
         Get product information by name with automatic retry on failure.
         
@@ -36,8 +41,11 @@ class BarcodeApiClient(requests.Session):
         params = {
             "search_terms": name,
             "action": "process",
-            "json": "true"
+            "json": "true",
         }
+        if fields:
+            params["fields"] = ",".join(fields)
+        
         response = self.get(url, params=params)
         response.raise_for_status()
         return response.json()
@@ -72,7 +80,7 @@ class BarcodeApiClient(requests.Session):
         max_tries=5,
         giveup=lambda e: isinstance(e, requests.exceptions.HTTPError) and e.response.status_code not in [429, 500, 502, 503, 504]
     )
-    def get_products_by_category(self, category: str, fields: list[str] = None) -> Dict[str, Any]:
+    def get_products_by_category(self, category: str, fields: list[str] = ["product_name", "product_name_en", "code", "image_url"] ) -> Dict[str, Any]:
         """
         Get products by category with automatic retry on failure.
         
@@ -89,6 +97,7 @@ class BarcodeApiClient(requests.Session):
         url = f"{self.base_url}/api/v2/search"
         params = {
             "categories_tags_en": category,
+            "json": "true",
         }
         if fields:
             params["fields"] = ",".join(fields)
