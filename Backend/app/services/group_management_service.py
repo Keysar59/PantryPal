@@ -89,3 +89,11 @@ class GroupManagementService:
         """
 
         return self.group_repository.get_groups_by_user_email(user_email)
+
+    def get_group_name_by_id(self, group_id: int) -> str:
+        """
+        Gets the name of a group by its id.
+        :param group_id: The id of the group.
+        """
+
+        return self.group_repository.get_group_name_by_id(group_id)

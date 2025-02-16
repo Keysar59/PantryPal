@@ -109,3 +109,17 @@ def get_groups_by_user_email(user_email: str,
         return {"message": "No groups were found", "groups": groups}
 
     return {"message": "Groups retrieved successfully", "groups": groups}
+
+@router.get("/get_group_name_by_id")
+def get_group_name_by_id(group_id: int,
+                        group_service: GroupManagementService = Depends(get_group_management_service)):
+    """
+    Gets the name of a group by its id.
+    :param group_id: The id of the group.
+    """
+    group_name = group_service.get_group_name_by_id(group_id)
+
+    if not group_name:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Group could not be found")
+
+    return {"message": "Group name retrieved successfully", "group_name": group_name}

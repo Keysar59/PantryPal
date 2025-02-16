@@ -155,3 +155,11 @@ class GroupRepositoryTxt(GroupRepositoryInterface):
                     groups.append(int(line.split(',')[0]))
         return groups
 
+    def get_group_name_by_id(self, group_id: int) -> str:
+        with open(self.file_path, "r") as file:
+            for line in file:
+                if str(group_id) == line.split(',')[0]:
+                    return line.split(',')[1]
+        return None
+
+

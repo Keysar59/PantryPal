@@ -22,3 +22,8 @@ class GroupRepositoryInterface:
     def get_groups_by_user_email(self, user_email: str) -> list[int]:
         pass
 
+    def get_group_name_by_id(self, group_id: int) -> str:
+        pass
+
+    # TODO: add get_list_ids_by_group_id
+
