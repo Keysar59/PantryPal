@@ -4,9 +4,6 @@
 # Ignore everything inside vscode
 vscode/*
 
-# Allow the welcome folder inside vscode
-!vscode/welcome/
-
 # Allow the app folder inside vscode/welcome
 !vscode/welcome/app/
 
