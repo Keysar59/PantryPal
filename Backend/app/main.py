@@ -5,7 +5,7 @@ import uvicorn
 
 from app.api.v1.testing_router import router as testing_router
 from app.api.v1.authentication_router import router as authentication_router
-# from app.api.v1.group_management_router import router as group_management_router
+from app.api.v1.group_management_router import router as group_management_router
 # from app.api.v1.list_management_router import router as list_management_router
 # from app.api.v1.products_fetching_router import router as product_fetching_router
 
