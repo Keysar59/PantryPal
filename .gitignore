@@ -3,12 +3,14 @@
 
 # Ignore everything inside vscode
 vscode/*
-
+PantryPalFront/*
 # Allow the app folder inside vscode/welcome
 !vscode/welcome/app/
+!PantryPalFront/app/
 
 # Allow all contents inside vscode/welcome/app
 !vscode/welcome/app/**
+!PantryPalFront/app/**
 
 
 ### react ###
