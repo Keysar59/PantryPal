@@ -17,7 +17,7 @@ class AuthenticationService:
         if (',' in user_data.email or ',' in user_data.password or user_data.email == "" or user_data.password == "" or user_data.email == None or user_data.password == None):
             print("User data is invalid")
             return None, None
-        user = self.user_repository.get_user_by_email(user_data.email)
+        user = self.user_repository.user_exists(user_data.email)
         if user:
             print("User already exists")
             return None, None
