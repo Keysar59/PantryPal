@@ -13,7 +13,7 @@ load_dotenv()
 class UserRepositorySQL(UserRepositoryInterface):
     def __init__(self):
         self.db_url = os.getenv("DATABASE_URL")
-        self._delete_table()
+        # self._delete_table()
         self._create_table()
 
     def _get_connection(self):
