@@ -37,18 +37,21 @@ class BarcodeApiClient(requests.Session):
         Raises:
             requests.exceptions.RequestException: If the request fails after all retries
         """
-        url = f"{self.base_url}/cgi/search.pl"
-        params = {
-            "search_terms": name,
-            "action": "process",
-            "json": "true",
-        }
-        if fields:
-            params["fields"] = ",".join(fields)
+        try:
+            url = f"{self.base_url}/cgi/search.pl"
+            params = {
+                "search_terms": name,
+                "action": "process",
+                "json": "true",
+            }
+            if fields:
+                params["fields"] = ",".join(fields)
         
-        response = self.get(url, params=params)
-        response.raise_for_status()
-        return response.json()
+            response = self.get(url, params=params)
+            response.raise_for_status()
+            return response.json()
+        except requests.HTTPError as e: 
+            return response.json()
 
     @backoff.on_exception(
         backoff.expo,
@@ -69,10 +72,14 @@ class BarcodeApiClient(requests.Session):
         Raises:
             requests.exceptions.RequestException: If the request fails after all retries
         """
-        url = f"{self.base_url}/api/v2/product/{barcode}.json"
-        response = self.get(url)
-        response.raise_for_status()
-        return response.json()
+        try:
+            url = f"{self.base_url}/api/v2/product/{barcode}.json"
+            response = self.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.HTTPError as e: 
+            return response.json()
+            
 
     @backoff.on_exception(
         backoff.expo,
@@ -94,15 +101,18 @@ class BarcodeApiClient(requests.Session):
         Raises:
             requests.exceptions.RequestException: If the request fails after all retries
         """
-        url = f"{self.base_url}/api/v2/search"
-        params = {
-            "categories_tags_en": category,
-            "json": "true",
-        }
-        if fields:
-            params["fields"] = ",".join(fields)
-            
-        response = self.get(url, params=params)
-        response.raise_for_status()
-        return response.json()
+        try:
+            url = f"{self.base_url}/api/v2/search"
+            params = {
+                "categories_tags_en": category,
+                "json": "true",
+            }
+            if fields:
+                params["fields"] = ",".join(fields)
+                
+            response = self.get(url, params=params)
+            response.raise_for_status()
+            return response.json()
+        except requests.HTTPError as e:
+            return response.json()
 
