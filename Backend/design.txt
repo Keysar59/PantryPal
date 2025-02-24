@@ -1,25 +1,74 @@
-├── backend/                        # Backend folder (FastAPI)
-│   ├── app/
+pantry_manager/
+│── app/
+│   ├── api/                        # Routers (Entry Point for FastAPI)
+│   │   ├── v1/
+│   │   │   ├── authentication_router.py
+│   │   │   ├── products_fetching_router.py
+│   │   │   ├── list_management_router.py
+│   │   │   ├── group_management_router.py
+│   │   │   ├── __init__.py
+│   ├── controllers/                # Controllers (Process API Requests)
+│   │   ├── authentication_controller.py
+│   │   ├── products_fetching_controller.py
+│   │   ├── list_management_controller.py
+│   │   ├── group_management_controller.py
 │   │   ├── __init__.py
-│   │   ├── main.py                 # FastAPI app entry point
-│   │   ├── controllers/            # API routes (presentation layer)
+│   ├── core/                       # Application-Wide Configurations
+│   │   ├── security.py              # JWT, OAuth, etc.
+│   │   ├── config.py                # Environment Configuration
+│   │   ├── database.py              # Database Setup
+│   │   ├── __init__.py
+│   ├── domain/                      # Business Logic Layer
+│   │   ├── entities/                 # Business Entities (Core Models)
+│   │   │   ├── user.py
+│   │   │   ├── product.py
+│   │   │   ├── list.py
+│   │   │   ├── group.py
 │   │   │   ├── __init__.py
-│   │   │   ├── user_controller.py  # User-related API routes
-│   │   │   └── item_controller.py  # Item-related API routes
-│   │   ├── domain/                 # Core business entities (domain layer)
+│   │   ├── repositories/             # Repository Interfaces
+│   │   │   ├── user_repository_interface.py
+│   │   │   ├── product_repository_interface.py
+│   │   │   ├── list_repository_interface.py
+│   │   │   ├── group_repository_interface.py
 │   │   │   ├── __init__.py
-│   │   │   └── entities.py         # Business models (User, Item, etc.)
-│   │   ├── services/            # Use cases and business logic (application layer)
+│   ├── infrastructures/             # Infrastructure Layer
+│   │   ├── repositories/             # Repository Implementations
+│   │   │   ├── user_repository.py
+│   │   │   ├── product_repository.py
+│   │   │   ├── list_repository.py
+│   │   │   ├── group_repository.py
 │   │   │   ├── __init__.py
-│   │   │   ├── services.py         # Business logic for each use case
-│   │   │   └── user_service.py     # Example use case for user-related logic
-│   │   ├── infrastructure/         # Data access (infrastructure layer)
+│   │   ├── external_apis/            # External API Integrations
+│   │   │   ├── barcode_api.py        # Fetch product details via barcode
 │   │   │   ├── __init__.py
-│   │   │   ├── repositories.py     # Repositories for database access
-│   │   │   └── db.py               # Database connection configuration
-│   │   ├── schemas/                # Pydantic models for request/response validation
-│   │   │   ├── __init__.py
-│   │   │   ├── user.py             # User schema
-│   │   │   └── item.py             # Item schema
-│   ├── requirements.txt            # Python dependencies (e.g., FastAPI, SQLAlchemy, etc.)
-│   └── Dockerfile                  # Dockerfile for backend deployment
+│   ├── services/                    # Business Use Cases (Application Logic)
+│   │   ├── authentication_service.py
+│   │   ├── product_service.py
+│   │   ├── list_service.py
+│   │   ├── group_service.py
+│   │   ├── __init__.py
+│   ├── schemas/                     # Data Transfer Objects (DTOs)
+│   │   ├── user_schema.py
+│   │   ├── product_schema.py
+│   │   ├── list_schema.py
+│   │   ├── group_schema.py
+│   │   ├── __init__.py
+│   ├── dependencies/                # Dependency Injection
+│   │   ├── auth.py                   # Authentication Dependencies
+│   │   ├── database.py               # Database Session Dependencies
+│   │   ├── __init__.py
+│   ├── main.py                      # FastAPI Entry Point
+│   ├── __init__.py
+│── tests/                           # Test Cases
+│   ├── unit/                         # Unit Tests
+│   │   ├── test_authentication.py
+│   │   ├── test_product_fetching.py
+│   │   ├── test_list_management.py
+│   │   ├── test_group_management.py
+│   │   ├── __init__.py
+│   ├── integration/                  # Integration Tests
+│   │   ├── test_endpoints.py
+│   │   ├── __init__.py
+│── .env                              # Environment Variables
+│── requirements.txt                  # Dependencies
+│── README.md                         # Project Documentation

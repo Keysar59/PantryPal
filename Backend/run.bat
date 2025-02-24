@@ -1,0 +1,1 @@
+python -muvicorn app.main:app --reload
