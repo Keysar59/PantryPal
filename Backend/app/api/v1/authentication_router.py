@@ -41,15 +41,13 @@ def login(user_data: User, response: Response,
     """
     Handles user login, verifies credentials, and sets a session cookie.
     """
-    user = authentication_service.login_user(user_data)
+    token = authentication_service.login_user(user_data)
     
-    if not user:
+    if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password"
         )
-
-    token = authentication_service.create_token(user_data.email)
 
     response.set_cookie(
         key="session_token",
