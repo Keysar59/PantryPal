@@ -6,7 +6,7 @@ def main():
     
     print("\nTesting get_product_by_name:")
     try:
-        name_result = client.get_product_by_name("chocolate")
+        name_result = client.get_product_by_name("chocolate", page=3)
         if name_result and "products" in name_result and len(name_result["products"]) > 0:
             print(f"First product by name: {name_result['products']}")
         else:
