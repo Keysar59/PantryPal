@@ -1,6 +1,8 @@
 import requests
 import backoff
 from typing import Dict, Any
+import functools
+import inspect
 #url for name: https://world.openfoodfacts.org/cgi/search.pl?search_terms=<search_term>&action=process&json=true - free text search
 #other url for name: https://world.openfoodfacts.org/cgi/search.pl?action=process&search_terms=chocolate&json=1 - free text search
 
@@ -17,9 +19,11 @@ class BarcodeApiClient(requests.Session):
     def __init__(self):
         super().__init__()
         self.base_url = "https://world.openfoodfacts.org"
-    
+        
     def api_call_wrapper(func):
-        def wrapper(self, page: int = 1, *args, **kwargs):
+        @functools.wraps(func)
+        def wrapper(self, *args, **kwargs):
+            page = kwargs.pop("page", 1)
             base_params = {
                 "page": page,
                 "page_size": 10
@@ -27,9 +31,10 @@ class BarcodeApiClient(requests.Session):
             fields = ["product_name", "product_name_en", "code", "image_url"]
             if fields:
                 base_params["fields"] = ",".join(fields)
-            return_value = func(self, base_params, *args, **kwargs)
+            return_value = func(self, *args, _base_params=base_params, **kwargs)
             #convert product json list to list of objects
             return return_value
+        
         return wrapper
     
     
@@ -40,7 +45,7 @@ class BarcodeApiClient(requests.Session):
         giveup=lambda e: isinstance(e, requests.exceptions.HTTPError) and e.response.status_code not in [429, 500, 502, 503, 504]
     )
     @api_call_wrapper
-    def get_product_by_name(self, base_params: Dict[str, Any], name: str) -> Dict[str, Any]:
+    def get_product_by_name(self, name: str, _base_params: Dict[str, Any]) -> Dict[str, Any]:
         """
         Get product information by name with automatic retry on failure.
         
@@ -59,7 +64,7 @@ class BarcodeApiClient(requests.Session):
             "search_terms": name,
             "action": "process",
             "json": "true",
-            **base_params  # Merge base_params last to preserve pagination and fields
+            **_base_params  # Merge base_params last to preserve pagination and fields
         }
     
         response = self.get(url, params=params)
@@ -101,7 +106,7 @@ class BarcodeApiClient(requests.Session):
         giveup=lambda e: isinstance(e, requests.exceptions.HTTPError) and e.response.status_code not in [429, 500, 502, 503, 504]
     )
     @api_call_wrapper
-    def get_products_by_category(self, base_params: Dict[str, Any], category: str) -> Dict[str, Any]:
+    def get_products_by_category(self, category: str, _base_params: Dict[str, Any]) -> Dict[str, Any]:
         """
         Get products by category with automatic retry on failure.
         
@@ -119,7 +124,7 @@ class BarcodeApiClient(requests.Session):
             params = {
                 "categories_tags_en": category,
                 "json": "true",
-                **base_params
+                **_base_params
             }
             
                 

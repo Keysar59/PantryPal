@@ -8,7 +8,7 @@ def main():
     try:
         name_result = client.get_product_by_name("chocolate")
         if name_result and "products" in name_result and len(name_result["products"]) > 0:
-            print(f"First product by name: {name_result['products'][0]}")
+            print(f"First product by name: {name_result['products']}")
         else:
             print("No products found by name")
     except requests.ConnectionError as e:
@@ -24,7 +24,7 @@ def main():
     
     print("\nTesting get_product_by_barcode:")
     try:
-        barcode_result = client.get_product_by_barcode("729000412780")
+        barcode_result = client.get_product_by_barcode("7290004127800")
         if barcode_result and "product" in barcode_result:
             print(f"Product by barcode: {barcode_result['product']}")
         else:
