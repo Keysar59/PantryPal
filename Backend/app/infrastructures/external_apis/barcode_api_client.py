@@ -12,11 +12,11 @@ from typing import Dict, Any
 #url for barcode: https://world.openfoodfacts.org/api/v2/product/<barcode>.json
 #other option: https://world.openfoodfacts.org/api/v0/product/<barcode>.json
 #example of barcode: 7290004127800 - milk
-
+BASE_URL = "https://world.openfoodfacts.org"
 class BarcodeApiClient(requests.Session):
     def __init__(self):
         super().__init__()
-        self.base_url = "https://world.openfoodfacts.org"
+        
         
     def build_base_params(self, page: int = 1):
         base_params = {
@@ -51,7 +51,7 @@ class BarcodeApiClient(requests.Session):
         Raises:
             requests.exceptions.RequestException: If the request fails after all retries
         """
-        url = f"{self.base_url}/cgi/search.pl"
+        url = f"{BASE_URL}/cgi/search.pl"
         params = {
             "search_terms": name,
             "action": "process",
@@ -83,7 +83,7 @@ class BarcodeApiClient(requests.Session):
             requests.exceptions.RequestException: If the request fails after all retries
         """
         try:
-            url = f"{self.base_url}/api/v2/product/{barcode}.json"
+            url = f"{BASE_URL}/api/v2/product/{barcode}.json"
             response = self.get(url)
             response.raise_for_status()
             return response.json()
@@ -111,7 +111,7 @@ class BarcodeApiClient(requests.Session):
             requests.exceptions.RequestException: If the request fails after all retries
         """
         try:
-            url = f"{self.base_url}/api/v2/search"
+            url = f"{BASE_URL}/api/v2/search"
             params = {
                 "categories_tags_en": category,
                 "json": "true",
