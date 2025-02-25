@@ -18,18 +18,35 @@ class BarcodeApiClient(requests.Session):
         super().__init__()
         self.base_url = "https://world.openfoodfacts.org"
     
+    def api_call_wrapper(func):
+        def wrapper(self, page: int = 1, *args, **kwargs):
+            base_params = {
+                "page": page,
+                "page_size": 10
+            }
+            fields = ["product_name", "product_name_en", "code", "image_url"]
+            if fields:
+                base_params["fields"] = ",".join(fields)
+            return_value = func(self, base_params, *args, **kwargs)
+            #convert product json list to list of objects
+            return return_value
+        return wrapper
+    
+    
     @backoff.on_exception(
         backoff.expo,
         (requests.exceptions.RequestException, requests.exceptions.HTTPError),
         max_tries=5,
         giveup=lambda e: isinstance(e, requests.exceptions.HTTPError) and e.response.status_code not in [429, 500, 502, 503, 504]
     )
-    def get_product_by_name(self, name: str, fields: list[str] = ["product_name", "product_name_en", "code", "image_url"]) -> Dict[str, Any]:
+    @api_call_wrapper
+    def get_product_by_name(self, base_params: Dict[str, Any], name: str) -> Dict[str, Any]:
         """
         Get product information by name with automatic retry on failure.
         
         Args:
             name: Product name to search for
+            base_params: Dictionary containing filtering parameters
             
         Returns:
             Dict containing product information
@@ -37,21 +54,17 @@ class BarcodeApiClient(requests.Session):
         Raises:
             requests.exceptions.RequestException: If the request fails after all retries
         """
-        try:
-            url = f"{self.base_url}/cgi/search.pl"
-            params = {
-                "search_terms": name,
-                "action": "process",
-                "json": "true",
-            }
-            if fields:
-                params["fields"] = ",".join(fields)
-        
-            response = self.get(url, params=params)
-            response.raise_for_status()
-            return response.json()
-        except requests.HTTPError as e: 
-            return response.json()
+        url = f"{self.base_url}/cgi/search.pl"
+        params = {
+            "search_terms": name,
+            "action": "process",
+            "json": "true",
+            **base_params  # Merge base_params last to preserve pagination and fields
+        }
+    
+        response = self.get(url, params=params)
+        response.raise_for_status()
+        return response.json()
 
     @backoff.on_exception(
         backoff.expo,
@@ -87,16 +100,16 @@ class BarcodeApiClient(requests.Session):
         max_tries=5,
         giveup=lambda e: isinstance(e, requests.exceptions.HTTPError) and e.response.status_code not in [429, 500, 502, 503, 504]
     )
-    def get_products_by_category(self, category: str, fields: list[str] = ["product_name", "product_name_en", "code", "image_url"] ) -> Dict[str, Any]:
+    @api_call_wrapper
+    def get_products_by_category(self, base_params: Dict[str, Any], category: str) -> Dict[str, Any]:
         """
         Get products by category with automatic retry on failure.
         
         Args:
             category: Category to search for (in English)
-            fields: Optional list of specific fields to return
-            
+            base_params: Dictionary containing filtering parameters
         Returns:
-            Dict containing product information
+            Dict containing product information 
             
         Raises:
             requests.exceptions.RequestException: If the request fails after all retries
@@ -106,9 +119,9 @@ class BarcodeApiClient(requests.Session):
             params = {
                 "categories_tags_en": category,
                 "json": "true",
+                **base_params
             }
-            if fields:
-                params["fields"] = ",".join(fields)
+            
                 
             response = self.get(url, params=params)
             response.raise_for_status()
