@@ -35,6 +35,32 @@ def signup(user_data: User, response: Response,
 
     return {"message": "User created successfully", "user": "testuser"}
 
+@router.post("/login")
+def login(user_data: User, response: Response, 
+          authentication_service: AuthenticationService = Depends(get_authentication_service)):
+    """
+    Handles user login, verifies credentials, and sets a session cookie.
+    """
+    token = authentication_service.login_user(user_data)
+    
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password"
+        )
+
+    response.set_cookie(
+        key="session_token",
+        value=token,
+        httponly=True,
+        max_age=int(timedelta(weeks=20).total_seconds()),
+        samesite="Lax",
+        secure=True
+    )
+
+    return {"message": "Login successful", "user": user_data.email}
+    
+
 #retrive cookie
 @router.get("/status")
 def check_status(request: Request):
