@@ -1,7 +1,7 @@
 import jwt as pyjwt
 import datetime
 from typing import Optional
-from app.domain.exceptions import UserAlreadyExistsException, InvalidSignupDataException, UserDoesNotExistsException
+from app.domain.exceptions import UserAlreadyExistsException, InvalidSignupDataException, UserDoesNotExistsException, ExpiredTokenException, InvalidTokenException
 from app.domain.entities.user import User
 from app.domain.repositories_interfaces.user_repository_interface import UserRepositoryInterface
 
@@ -58,8 +58,6 @@ class AuthenticationService:
             return self.user_repository.user_exists(user_email)
         
         except pyjwt.ExpiredSignatureError:
-            print("Token expired")
-            return None
+            raise ExpiredTokenException()
         except pyjwt.InvalidTokenError:
-            print("Invalid token")
-            return None
+            raise InvalidTokenException()
