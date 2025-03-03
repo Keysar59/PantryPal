@@ -1,7 +1,7 @@
 import jwt as pyjwt
 import datetime
 from typing import Optional
-from app.domain.exceptions import UserAlreadyExistsException
+from app.domain.exceptions import UserAlreadyExistsException, InvalidSignupDataException, UserDoesNotExistsException
 from app.domain.entities.user import User
 from app.domain.repositories_interfaces.user_repository_interface import UserRepositoryInterface
 
@@ -14,28 +14,26 @@ class AuthenticationService:
         self.user_repository = user_repository
 
     def signup_user(self, user_data: User) -> Optional[tuple]:
-
+        
+        # Signup data validation
         if (',' in user_data.email or ',' in user_data.password or user_data.email == "" or user_data.password == "" or user_data.email == None or user_data.password == None):
-            print("User data is invalid")
-            return None, None
+            raise InvalidSignupDataException()
+        
+        # Check if user already exists in db
         user = self.user_repository.user_exists(user_data.email)
         if user:
             raise UserAlreadyExistsException(user_data.email)
 
+        # Creates a user
         user = self.user_repository.create_user(user_data)
-        if not user:
-            print("User could not be created (db)")
-            return None, None
 
         token = self.create_token(user.email)
         return user, token
     
-    # login user returns token
     def login_user(self, user_data: User) -> Optional[str]:
         user = self.user_repository.get_user_by_email(user_data.email)
         if not user:
-            print("User does not exist")
-            return None
+            raise UserDoesNotExistsException()
         token = self.create_token(user.email)
         return token
 

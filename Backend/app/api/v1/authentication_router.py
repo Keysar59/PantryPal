@@ -14,12 +14,6 @@ def signup(user_data: User, response: Response,
     """
     print(user_data)
     user, token = authentication_service.signup_user(user_data)
-    
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User could not be created (user null)"
-        )
 
     payload = authentication_service.create_token(user.email)
 
