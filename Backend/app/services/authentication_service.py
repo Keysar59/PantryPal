@@ -1,6 +1,7 @@
 import jwt as pyjwt
 import datetime
 from typing import Optional
+from app.domain.exceptions import UserAlreadyExistsException
 from app.domain.entities.user import User
 from app.domain.repositories_interfaces.user_repository_interface import UserRepositoryInterface
 
@@ -19,8 +20,7 @@ class AuthenticationService:
             return None, None
         user = self.user_repository.user_exists(user_data.email)
         if user:
-            print("User already exists")
-            return None, None
+            raise UserAlreadyExistsException(user_data.email)
 
         user = self.user_repository.create_user(user_data)
         if not user:
