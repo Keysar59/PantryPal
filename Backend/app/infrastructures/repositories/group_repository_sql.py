@@ -1,5 +1,6 @@
 import psycopg2
 import os
+from random import randint
 from psycopg2.extras import DictCursor
 from dotenv import load_dotenv
 from app.domain.entities.group import Group
@@ -34,7 +35,7 @@ class GroupRepositorySQL(GroupRepositoryInterface):
         queries = [
             '''
                 CREATE TABLE IF NOT EXISTS groups (
-                    id SERIAL PRIMARY KEY,
+                    id INT PRIMARY KEY,
                     name VARCHAR(255) NOT NULL,
                     creator VARCHAR(255) NOT NULL,
                     pantry_list_id INT NOT NULL,
@@ -77,17 +78,31 @@ class GroupRepositorySQL(GroupRepositoryInterface):
         """
         Inserts a new group into the database.
         """
+        id_found = False
+
+        while not id_found:
+            unique_id = randint(100000, 999999)
+
+            query = "SELECT id FROM groups WHERE id = %s"
+            with self._get_connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(query, (unique_id, ))
+                    results = cursor.fetchone()
+
+            if not results:  # Makes sure id is not in use.
+                id_found = True
+
         # TODO: Create new lists
         pantry_list_id = 1
         default_list_id = 1
         shopping_list_id = 1
         query = '''
-        INSERT INTO groups (name, creator, pantry_list_id, default_list_id, shopping_list_id) 
-        VALUES (%s, %s, %s, %s, %s) RETURNING id
+        INSERT INTO groups (id, name, creator, pantry_list_id, default_list_id, shopping_list_id) 
+        VALUES (%s, %s, %s, %s, %s, %s) RETURNING id
         '''
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
-                cursor.execute(query, (group_name, user_email, pantry_list_id, default_list_id, shopping_list_id))
+                cursor.execute(query, (unique_id, group_name, user_email, pantry_list_id, default_list_id, shopping_list_id))
                 results = cursor.fetchone()
                 conn.commit()
 
