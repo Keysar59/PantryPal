@@ -1,7 +1,7 @@
 from app.domain.entities.group import Group
 
 class GroupRepositoryInterface:
-    def create_group(self, group_name: str) -> int:
+    def create_group(self, group_name: str, user_email: str) -> int:
         pass
 
     def delete_group(self, group_id: int) -> bool:
