@@ -14,16 +14,23 @@ load_dotenv()
 
 class GroupRepositorySQL(GroupRepositoryInterface):
     def __init__(self):
+        """
+        Initiate the repository. Creates tables in necessary.
+        """
         self.db_url = os.getenv("DATABASE_URL")
         # self._delete_tables()
         self._create_tables()
 
     def _get_connection(self):
-        """Creates a new database connection."""
+        """
+        Creates a new database connection.
+        """
         return psycopg2.connect(self.db_url, cursor_factory=DictCursor)
 
     def _create_tables(self):
-        """Initialize the groups and user_to_groups tables if it doesn't exist"""
+        """
+        Initialize the groups and user_to_groups tables if they don't exist.
+        """
         queries = [
             '''
                 CREATE TABLE IF NOT EXISTS groups (
@@ -54,7 +61,9 @@ class GroupRepositorySQL(GroupRepositoryInterface):
                     conn.commit()
 
     def _delete_tables(self):
-        """Drop the groups and user_to_groups tables if it exist"""
+        """
+        Drops the groups and user_to_groups tables if they exist.
+        """
         queries = ["DROP TABLE IF EXISTS user_to_groups", "DROP TABLE IF EXISTS groups"]
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
@@ -65,11 +74,13 @@ class GroupRepositorySQL(GroupRepositoryInterface):
 
 
     def create_group(self, group_name: str, user_email: str) -> int:
+        """
+        Inserts a new group into the database.
+        """
         # TODO: Create new lists
         pantry_list_id = 1
         default_list_id = 1
         shopping_list_id = 1
-        """Inserts a new group into the database."""
         query = '''
         INSERT INTO groups (name, creator, pantry_list_id, default_list_id, shopping_list_id) 
         VALUES (%s, %s, %s, %s, %s) RETURNING id
@@ -80,20 +91,22 @@ class GroupRepositorySQL(GroupRepositoryInterface):
                 results = cursor.fetchone()
                 conn.commit()
 
-        if not results:
-            return False # TODO: Raise error, no group found.
+        if not results:  # Makes sure id was returned, meaning group was created successfully.
+            return False # TODO: Raise error, failed creating group.
         group_id = results[0]
         return group_id
 
     def add_user_to_group(self, group_id: int, user_email: str):
-        # TODO: Add notes
+        """
+        Checks if user is not in the spesified group and if so adds the user to the spesified group.
+        """
         query = "SELECT email FROM user_to_groups WHERE group_id = %s and email = %s"
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query, (group_id, user_email))
                 results = cursor.fetchone()
 
-        if results:
+        if results:  # Makes sure user is not in the group.
             return False # TODO: Raise error, user already in group found.
         
         query = '''
@@ -109,14 +122,16 @@ class GroupRepositorySQL(GroupRepositoryInterface):
 
         
     def remove_user_from_group(self, group_id: int, user_email: str):
-        # TODO: Add notes
-        query = "SELECT email, is_admin FROM user_to_groups WHERE group_id = %s and email = %s"
+        """
+        Checks if user is in the spesified group and is not the creator, if so removes user from the spesified group.
+        """
+        query = "SELECT email FROM user_to_groups WHERE group_id = %s and email = %s"
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query, (group_id, user_email))
                 results = cursor.fetchone()
 
-        if not results:
+        if not results:  # Makes sure user is in the group.
             return False # TODO: Raise error, no group found or user not in group.
 
         query = "SELECT creator FROM groups WHERE id = %s"
@@ -125,9 +140,9 @@ class GroupRepositorySQL(GroupRepositoryInterface):
                 cursor.execute(query, (group_id, ))
                 results = cursor.fetchone()
 
-        if not results:
+        if not results:  # Makes sure group exists.
             return False # TODO: Raise error, no group found.
-        if results[0] == user_email:
+        if results[0] == user_email:  # Makes sure user is not the creator.
             return False # TODO: Raise error, user is the creator.
         
         query = "DELETE FROM user_to_groups WHERE group_id = %s and email = %s"
@@ -139,16 +154,18 @@ class GroupRepositorySQL(GroupRepositoryInterface):
         
 
     def promote_user_to_admin(self, group_id: int, user_email: str):
-        # TODO: Add notes
+        """
+        Checks if user is in the spesified group and is not an admin, if so promotes the user to admin.
+        """
         query = "SELECT is_admin FROM user_to_groups WHERE group_id = %s and email = %s"
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query, (group_id, user_email))
                 results = cursor.fetchone()
 
-        if not results:
+        if not results:  # Makes sure group exists.
             return False # TODO: Raise error, no group found.
-        if results[0]:
+        if results[0]:  # Makes sure user is not an admin.
             return False # TODO: Raise error, user already an admin.
         
         query = "UPDATE user_to_groups SET is_admin = TRUE WHERE group_id = %s AND email = %s"
@@ -160,15 +177,18 @@ class GroupRepositorySQL(GroupRepositoryInterface):
         
 
     def demote_admin_to_user(self, group_id: int, user_email: str):
+        """
+        Checks if user is in the spesified group, is an admin but is not the creator. If so demotes the admin to a user.
+        """
         query = "SELECT is_admin FROM user_to_groups WHERE group_id = %s and email = %s"
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query, (group_id, user_email))
                 results = cursor.fetchone()
 
-        if not results:
+        if not results:  # Makes sure group exists.
             return False # TODO: Raise error, no group found.
-        if not results[0]:
+        if not results[0]:  # Makes sure user is not an admin.
             return False # TODO: Raise error, user not an admin.
 
         
@@ -178,9 +198,9 @@ class GroupRepositorySQL(GroupRepositoryInterface):
                 cursor.execute(query, (group_id, ))
                 results = cursor.fetchone()
 
-        if not results:
+        if not results:  # Makes sure group exists.
             return False # TODO: Raise error, no group found.
-        if results[0] == user_email:
+        if results[0] == user_email:  # Makes sure user is not the creator.
             return False # TODO: Raise error, user is the creator.
         
 
@@ -193,14 +213,16 @@ class GroupRepositorySQL(GroupRepositoryInterface):
       
 
     def get_groups_by_user_email(self, user_email: str) -> list[int]:
-        # TODO: add notes
+        """
+        Gets a list of all the id's of the groups the spesified user is in.
+        """
         query = "SELECT group_id FROM user_to_groups WHERE email = %s"
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query, (user_email,))
                 results = cursor.fetchall()
 
-        if not results:
+        if not results:  # Makes sure group exists.
             return False # TODO: Raise error, no group found.
 
         group_ids = []
@@ -210,18 +232,23 @@ class GroupRepositorySQL(GroupRepositoryInterface):
         return group_ids
 
     def get_group_name_by_id(self, group_id: int) -> str:
-        # TODO: add notes
+        """
+        Gets the name of the spesified group.
+        """
         query = "SELECT name FROM groups WHERE id = %s"
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query, (group_id,))
                 results = cursor.fetchone()
 
-        if not results:
+        if not results:  # Makes sure group exists.
             return False # TODO: Raise error, no group found.
         return results[0]
 
     def get_list_ids_by_group_id(self, group_id) -> list[int]:
+        """
+        Gets the id's for the pantry list, the default list and the shopping list of the spesified group.
+        """
         queries = [
             "SELECT pantry_list_id FROM groups WHERE id = %s",
             "SELECT default_list_id FROM groups WHERE id = %s",
@@ -235,7 +262,7 @@ class GroupRepositorySQL(GroupRepositoryInterface):
                 for query in queries:
                     cursor.execute(query, (group_id,))
                     results = cursor.fetchone()
-                    if not results:
+                    if not results:  # Makes sure list id was found.
                         return False # TODO: Raise error, no id found.
                     list_ids.append(results[0])
 
