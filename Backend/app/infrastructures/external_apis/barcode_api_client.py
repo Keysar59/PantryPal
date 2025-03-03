@@ -1,6 +1,7 @@
 import requests
 import backoff
-from typing import Dict, Any
+from typing import Dict, Any, List
+from app.domain.entities.product import json_to_product, json_to_product_list, Product, full_json_to_product
 #url for name: https://world.openfoodfacts.org/cgi/search.pl?search_terms=<search_term>&action=process&json=true - free text search
 #other url for name: https://world.openfoodfacts.org/cgi/search.pl?action=process&search_terms=chocolate&json=1 - free text search
 
@@ -37,7 +38,7 @@ class BarcodeApiClient(requests.Session):
         max_tries=5,
         giveup=lambda e: isinstance(e, requests.exceptions.HTTPError) and e.response.status_code not in [429, 500, 502, 503, 504]
     )
-    def get_product_by_name(self, name: str, page: int = 1) -> Dict[str, Any]:
+    def get_product_by_name(self, name: str, page: int = 1) -> List[Product]:
         """
         Get product information by name with automatic retry on failure.
         
@@ -51,17 +52,21 @@ class BarcodeApiClient(requests.Session):
         Raises:
             requests.exceptions.RequestException: If the request fails after all retries
         """
-        url = f"{BASE_URL}/cgi/search.pl"
-        params = {
-            "search_terms": name,
-            "action": "process",
-            "json": "true",
-            **self.build_base_params(page)
-        }
+        try:
+            url = f"{BASE_URL}/cgi/search.pl"
+            params = {
+                "search_terms": name,
+                "action": "process",
+                "json": "true",
+                **self.build_base_params(page)
+            }
     
-        response = self.get(url, params=params)
-        response.raise_for_status()
-        return response.json()
+            response = self.get(url, params=params)
+            response.raise_for_status()
+            return json_to_product_list(response.json())
+        except requests.HTTPError as e:
+            print(f"no products found for name or part of the name: {name}")
+            return []
 
     @backoff.on_exception(
         backoff.expo,
@@ -69,7 +74,7 @@ class BarcodeApiClient(requests.Session):
         max_tries=5,
         giveup=lambda e: isinstance(e, requests.exceptions.HTTPError) and e.response.status_code not in [429, 500, 502, 503, 504]
     )
-    def get_product_by_barcode(self, barcode: str) -> Dict[str, Any]:
+    def get_product_by_barcode(self, barcode: str) -> Product:
         """
         Get product information by barcode with automatic retry on failure.
         
@@ -84,12 +89,15 @@ class BarcodeApiClient(requests.Session):
         """
         try:
             url = f"{BASE_URL}/api/v2/product/{barcode}.json"
-            response = self.get(url)
+            params = {
+               **self.build_base_params(),
+            }
+            response = self.get(url, params=params)
             response.raise_for_status()
-            return response.json()
+            return full_json_to_product(response.json())
         except requests.HTTPError as e: 
-            return response.json()
-            
+            print(f"no product found for barcode: {barcode}")
+            return None
 
     @backoff.on_exception(
         backoff.expo,
@@ -97,7 +105,7 @@ class BarcodeApiClient(requests.Session):
         max_tries=5,
         giveup=lambda e: isinstance(e, requests.exceptions.HTTPError) and e.response.status_code not in [429, 500, 502, 503, 504]
     )
-    def get_products_by_category(self, category: str, page: int = 1) -> Dict[str, Any]:
+    def get_products_by_category(self, category: str, page: int = 1) -> List[Product]:
         """
         Get products by category with automatic retry on failure.
         
@@ -120,8 +128,9 @@ class BarcodeApiClient(requests.Session):
             
                 
             response = self.get(url, params=params)
-            response.raise_for_status()
-            return response.json()
+            response.raise_for_status()            
+            return json_to_product_list(response.json())
         except requests.HTTPError as e:
-            return response.json()
+            print(f"no products found for category: {category}")
+            return []
 

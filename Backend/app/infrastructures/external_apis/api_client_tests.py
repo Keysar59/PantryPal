@@ -1,14 +1,14 @@
-from barcode_api_client import BarcodeApiClient
+from app.infrastructures.external_apis.barcode_api_client import BarcodeApiClient
 import requests
-
+from app.domain.entities.product import product_to_json_list, product_to_json
 def main():
     client = BarcodeApiClient()
     
     print("\nTesting get_product_by_name:")
     try:
         name_result = client.get_product_by_name("chocolate", page=3)
-        if name_result and "products" in name_result and len(name_result["products"]) > 0:
-            print(f"First product by name: {name_result['products']}")
+        if len(name_result) > 0:
+            print(f"page 3, 10 products: \n{product_to_json_list(name_result)}")
         else:
             print("No products found by name")
     except requests.ConnectionError as e:
@@ -25,8 +25,8 @@ def main():
     print("\nTesting get_product_by_barcode:")
     try:
         barcode_result = client.get_product_by_barcode("7290004127800")
-        if barcode_result and "product" in barcode_result:
-            print(f"Product by barcode: {barcode_result['product']}")
+        if barcode_result:
+            print(f"Product by barcode: {product_to_json(barcode_result)}")
         else:
             print("No product found by barcode")
     except requests.ConnectionError as e:
@@ -43,8 +43,8 @@ def main():
     print("\nTesting get_products_by_category:")
     try:
         category_result = client.get_products_by_category("chocolates")
-        if category_result and "products" in category_result and len(category_result["products"]) > 0:
-            print(f"First product by category: {category_result['products'][0]}")
+        if len(category_result) > 0:
+            print(f"page 1, 10 products: \n{product_to_json_list(category_result)}")
         else:
             print("No products found by category")
     except requests.ConnectionError as e:
