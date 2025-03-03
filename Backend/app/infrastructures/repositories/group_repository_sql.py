@@ -70,7 +70,7 @@ class GroupRepositorySQL(GroupRepositoryInterface):
                 for query in queries:
                     cursor.execute(query)
                     conn.commit()
-
+        
 
 
     def create_group(self, group_name: str, user_email: str) -> int:
@@ -96,7 +96,22 @@ class GroupRepositorySQL(GroupRepositoryInterface):
         group_id = results[0]
         return group_id
 
-    def add_user_to_group(self, group_id: int, user_email: str):
+
+    def delete_group(self, group_id: int) -> bool:
+        """
+        Deletes the spesified group if exists from both lists.
+        """
+        queries = ["DELETE FROM user_to_groups WHERE group_id = %s ", "DELETE FROM groups WHERE id = %s "]
+        with self._get_connection() as conn:
+            with conn.cursor() as cursor:
+                for query in queries:
+                    cursor.execute(query, (group_id, ))
+                    conn.commit()
+
+        return True
+
+
+    def add_user_to_group(self, group_id: int, user_email: str) -> bool:
         """
         Checks if user is not in the spesified group and if so adds the user to the spesified group.
         """
@@ -121,7 +136,7 @@ class GroupRepositorySQL(GroupRepositoryInterface):
         return True
 
         
-    def remove_user_from_group(self, group_id: int, user_email: str):
+    def remove_user_from_group(self, group_id: int, user_email: str) -> bool:
         """
         Checks if user is in the spesified group and is not the creator, if so removes user from the spesified group.
         """
@@ -153,7 +168,7 @@ class GroupRepositorySQL(GroupRepositoryInterface):
         return True
         
 
-    def promote_user_to_admin(self, group_id: int, user_email: str):
+    def promote_user_to_admin(self, group_id: int, user_email: str) -> bool:
         """
         Checks if user is in the spesified group and is not an admin, if so promotes the user to admin.
         """
@@ -176,7 +191,7 @@ class GroupRepositorySQL(GroupRepositoryInterface):
         return True
         
 
-    def demote_admin_to_user(self, group_id: int, user_email: str):
+    def demote_admin_to_user(self, group_id: int, user_email: str) -> bool:
         """
         Checks if user is in the spesified group, is an admin but is not the creator. If so demotes the admin to a user.
         """
