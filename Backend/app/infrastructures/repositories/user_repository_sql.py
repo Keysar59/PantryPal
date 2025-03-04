@@ -69,7 +69,7 @@ class UserRepositorySQL(UserRepositoryInterface):
             with conn.cursor() as cursor:
                 cursor.execute(query, (email,))
                 return cursor.fetchone() is not None
-            
+
     def get_user_by_email(self, user_email: str) -> Optional[User]:
         """Fetches a user by email."""
         query = "SELECT email, password FROM users WHERE email = %s"
@@ -80,7 +80,7 @@ class UserRepositorySQL(UserRepositoryInterface):
                 if result:
                     return User(email=result["email"], password=result["password"])
         return None
-            
+
     def get_data(self):
         query = "SELECT * FROM users"
         with self._get_connection() as conn:
