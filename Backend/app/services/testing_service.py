@@ -1,8 +1,9 @@
 from app.infrastructures.external_apis.barcode_api_client import BarcodeApiClient
+from app.domain.repositories_interfaces.user_repository_interface import UserRepositoryInterface
 
 class TestingService:
-    def __init__(self):
-        pass
+    def __init__(self, users_repo: UserRepositoryInterface):
+        self.users_repository = users_repo
 
     def get_product_by_barcode(self, barcode: str):
         barcode_api_client = BarcodeApiClient()

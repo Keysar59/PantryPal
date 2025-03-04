@@ -24,4 +24,10 @@ def get_product_by_category(category: str, page: int = 1, testing_service: Testi
 
 
 
+@router.get("/get_users_data")
+def get_users_data(testing_service: TestingService = Depends(get_testing_service)):
+    data = testing_service.get_users_data()
+    print("data2", data)
+    return {"data:": data}
+
 
