@@ -22,7 +22,7 @@ class ProductEncoder(json.JSONEncoder):
 def product_to_json(product: Product) -> dict:
     return json.dumps(product, cls=ProductEncoder)
 
-def product_to_json_list(products: list[Product]) -> list[dict]:
+def products_to_json_list(products: list[Product]) -> list[dict]:
     return [product_to_json(product) for product in products]
 
 def full_json_to_product(json_data: dict) -> Product:

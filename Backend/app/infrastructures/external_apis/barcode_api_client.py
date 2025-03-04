@@ -38,7 +38,7 @@ class BarcodeApiClient(requests.Session):
         max_tries=5,
         giveup=lambda e: isinstance(e, requests.exceptions.HTTPError) and e.response.status_code not in [429, 500, 502, 503, 504]
     )
-    def get_product_by_name(self, name: str, page: int = 1) -> List[Product]:
+    def get_products_by_name(self, name: str, page: int = 1) -> List[Product]:
         """
         Get product information by name with automatic retry on failure.
         

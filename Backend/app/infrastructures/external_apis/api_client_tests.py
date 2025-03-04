@@ -1,14 +1,14 @@
 from app.infrastructures.external_apis.barcode_api_client import BarcodeApiClient
 import requests
-from app.domain.entities.product import product_to_json_list, product_to_json
+from app.domain.entities.product import product_to_json, products_to_json_list
 def main():
     client = BarcodeApiClient()
     
     print("\nTesting get_product_by_name:")
     try:
-        name_result = client.get_product_by_name("chocolate", page=3)
+        name_result = client.get_products_by_name("chocolate", page=3)
         if len(name_result) > 0:
-            print(f"page 3, 10 products: \n{product_to_json_list(name_result)}")
+            print(f"page 3, 10 products: \n{products_to_json_list(name_result)}")
         else:
             print("No products found by name")
     except requests.ConnectionError as e:
@@ -44,7 +44,7 @@ def main():
     try:
         category_result = client.get_products_by_category("chocolates")
         if len(category_result) > 0:
-            print(f"page 1, 10 products: \n{product_to_json_list(category_result)}")
+            print(f"page 1, 10 products: \n{products_to_json_list(category_result)}")
         else:
             print("No products found by category")
     except requests.ConnectionError as e:
