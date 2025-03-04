@@ -14,73 +14,62 @@ class GroupManagementService:
         :param user_email: The email of the user creating the group.
         """
 
-        new_group_id = self.group_repository.create_group(group_name)
+        new_group_id = self.group_repository.create_group(group_name, user_email)
 
-        if self.group_repository.add_user_to_group(new_group_id, user_email):
-            if self.group_repository.promote_user_to_admin(new_group_id, user_email):
-                return new_group_id
+        self.group_repository.add_user_to_group(new_group_id, user_email)
+        self.group_repository.promote_user_to_admin(new_group_id, user_email)
+        return new_group_id
 
-        self.group_repository.delete_group(new_group_id)
-        return -1
+        
     
-    def delete_group(self, group_id: int) -> bool:
+    def delete_group(self, group_id: int):
         """
         Deletes a group.
         :param group_id: The id of the group to delete.
         """
 
-        if self.group_repository.delete_group(group_id):
-            return True
+        return self.group_repository.delete_group(group_id)
 
-        return False
             
-    def join_group(self, group_id: int, user_email: str) -> bool:
+    def join_group(self, group_id: int, user_email: str):
         """
         Adds a user to a group.
         :param group_id: The id of the group.
         :param user_email: The email of the user to add to the group.
         """
 
-        if self.group_repository.add_user_to_group(group_id, user_email):
-            return True
+        return self.group_repository.add_user_to_group(group_id, user_email)
 
-        return False
     
-    def leave_group(self, group_id: int, user_email: str) -> bool:
+    def leave_group(self, group_id: int, user_email: str):
         """
         Removes a user from a group.
         :param group_id: The id of the group.
         :param user_email: The email of the user to remove from the group.
         """
 
-        if self.group_repository.remove_user_from_group(group_id, user_email):
-            return True
+        return self.group_repository.remove_user_from_group(group_id, user_email)
+        
 
-        return False
-
-    def promote_user_to_admin(self, group_id: int, user_email: str) -> bool:
+    def promote_user_to_admin(self, group_id: int, user_email: str):
         """
         Promotes a user to admin.
         :param group_id: The id of the group.
         :param user_email: The email of the user to promote to admin.
         """
 
-        if self.group_repository.promote_user_to_admin(group_id, user_email):
-            return True
-            
-        return False
+        return self.group_repository.promote_user_to_admin(group_id, user_email)
+
     
-    def demote_admin_to_user(self, group_id: int, user_email: str) -> bool:
+    def demote_admin_to_user(self, group_id: int, user_email: str):
         """
         Demotes a user from admin to user.
         :param group_id: The id of the group.
         :param user_email: The email of the admin to demote to user.
         """
 
-        if self.group_repository.demote_admin_to_user(group_id, user_email):
-            return True
-        
-        return False
+        return self.group_repository.demote_admin_to_user(group_id, user_email)
+
 
     def get_groups_by_user_email(self, user_email: str) -> list[int]:
         """
@@ -90,6 +79,7 @@ class GroupManagementService:
 
         return self.group_repository.get_groups_by_user_email(user_email)
 
+
     def get_group_name_by_id(self, group_id: int) -> str:
         """
         Gets the name of a group by its id.
@@ -97,6 +87,7 @@ class GroupManagementService:
         """
 
         return self.group_repository.get_group_name_by_id(group_id)
+
 
     def get_list_ids_by_group_id(self, group_id: int) -> list[int]:
         """
