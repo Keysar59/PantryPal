@@ -6,6 +6,8 @@ USER root
 # Set the working directory inside the container
 WORKDIR /Backend
 
+RUN yum install -y gcc libpq-devel python3-devel
+
 # Copy only requirements first (for better caching)
 COPY requirements.txt .
 
