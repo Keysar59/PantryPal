@@ -4,7 +4,7 @@ FROM python:3.12-slim
 USER root
 
 # Set the working directory inside the container
-WORKDIR /Backend
+WORKDIR /Backend/app/
 
 RUN apt-get update && apt-get install -y gcc libpq-dev python3-dev
 
