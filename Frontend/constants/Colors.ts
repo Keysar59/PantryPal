@@ -13,6 +13,7 @@ export const Colors = {
     text: '#000000',
     secondaryText: '#8E8E93',
     border: '#E5E5EA',
+    tabBackground: '#E5E5EA',
     primary: '#007AFF',
   },
   dark: {
