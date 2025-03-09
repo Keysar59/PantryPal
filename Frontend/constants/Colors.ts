@@ -10,6 +10,7 @@ export const Colors = {
   light: {
     background: '#F2F2F7',
     card: '#FFFFFF',
+    serchContainer: '#6ba4ff',
     text: '#000000',
     secondaryText: '#8E8E93',
     border: '#E5E5EA',
@@ -19,6 +20,7 @@ export const Colors = {
   dark: {
     background: '#000000',
     card: '#1C1C1E',
+    serchContainer: '#6ba4ff',
     text: '#FFFFFF',
     secondaryText: '#8E8E93',
     border: '#38383A',
