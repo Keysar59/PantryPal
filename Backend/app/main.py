@@ -31,9 +31,9 @@ def read_root():
     return {"Hello": "World"}
 
 #app.include_router(testing_router, prefix="/api/v1/testing")
-#app.include_router(authentication_router, prefix="/api/v1/auth")
-#app.include_router(group_management_router, prefix="/api/v1/group")
-# app.include_router(list_management_router, prefix="/api/v1/list")
+app.include_router(authentication_router, prefix="/api/v1/auth")
+app.include_router(group_management_router, prefix="/api/v1/group")
+#app.include_router(list_management_router, prefix="/api/v1/list")
 app.include_router(products_fetching_router, prefix="/api/v1/product_fetching")
 
 if __name__ == "__main__":
