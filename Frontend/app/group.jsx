@@ -110,6 +110,42 @@ export default function Group() {
       ]
     );
   };
+  const handleDeleteGroup = () => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete the group?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            // Add your delete list logic here
+          }
+        }
+      ]
+    );
+  };
+  const handleLeaveGroup= () => {
+    Alert.alert(
+      "Confirm Leave",
+      "Are you sure you want to leave the group?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            // Add your logic here
+          }
+        }
+      ]
+    );
+  };
   const renderItem = (item, isPantry = false) => (
     <Pressable 
       key={item.id} 
@@ -271,25 +307,18 @@ export default function Group() {
                 <Ionicons name="add" size={20} color="white" />
                 <Text style={styles.buttonText}>Add Product</Text>
               </Pressable>
-              <Pressable 
-                style={[styles.button, styles.successButton]} 
-                onPress={() => router.push("/scan")}
-              >
-                <Ionicons name="barcode" size={20} color="white" />
-                <Text style={styles.buttonText}>Scan Barcode</Text>
-              </Pressable>
             </View>
           </>
         )}
       </ScrollView>
       <View style={styles.bottomButtons}>
-        <Pressable style={[styles.button, styles.dangerButton]} onPress={() => {}}>
+        <Pressable style={[styles.button, styles.dangerButton]}  onPress={handleDeleteGroup}>
           <Ionicons name="trash" size={20} color="white" />
           <Text style={styles.buttonText}>Delete Group</Text>
         </Pressable>
         <Pressable 
           style={[styles.button, styles.secondaryButton, { backgroundColor: theme.card }]} 
-          onPress={() => {}}
+          onPress={handleLeaveGroup}
         >
           <Ionicons name="exit" size={20} color="#007AFF" />
           <Text style={styles.secondaryButtonText}>Leave Group</Text>
@@ -430,9 +459,6 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     fontSize: 16,
     fontWeight: '600',
-  },
-  successButton: {
-    backgroundColor: '#34C759',  // iOS green color
   },
   clearButton: {
     padding: 4,

@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { 
-  Text, 
-  View, 
-  StyleSheet, 
-  Pressable, 
-  SafeAreaView, 
-  TextInput, 
-  KeyboardAvoidingView, 
-  Platform, 
-  useColorScheme 
+import {
+  Text,
+  View,
+  StyleSheet,
+  Pressable,
+  SafeAreaView,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  useColorScheme
 } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from 'expo-router';
@@ -74,8 +74,8 @@ export default function AddProduct() {
         </Pressable>
         <Text style={[styles.title, { color: theme.text }]}>Add Product</Text>
       </View>
-      <KeyboardAvoidingView 
-        style={styles.flex} 
+      <KeyboardAvoidingView
+        style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View style={[styles.card, { backgroundColor: theme.card }]}>
@@ -97,6 +97,13 @@ export default function AddProduct() {
           <Pressable style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleAddProduct}>
             <Ionicons name="add-outline" size={20} color="white" />
             <Text style={styles.buttonText}>Add Product</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.button, styles.successButton]}
+            onPress={() => router.push("/scan")}
+          >
+            <Ionicons name="barcode" size={20} color="white" />
+            <Text style={styles.buttonText}>Scan Barcode</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>
@@ -142,6 +149,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
+  },
+  successButton: {
+    backgroundColor: '#34C759', 
   },
   buttonText: {
     color: 'white',
