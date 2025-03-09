@@ -275,13 +275,6 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
                  <Ionicons name="add" size={20} color="white" />
                  <Text style={styles.buttonText}>Add Product</Text>
                </Pressable>
-               <Pressable 
-                 style={[styles.button, styles.successButton]} 
-                 onPress={() => router.push("/scan")}
-               >
-                 <Ionicons name="barcode" size={20} color="white" />
-                 <Text style={styles.buttonText}>Scan Barcode</Text>
-               </Pressable>
              </View>
            </>
          )}
