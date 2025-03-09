@@ -4,38 +4,37 @@ import { Colors } from "../constants/Colors";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 
-export default function NewGroup() {
+export default function JoinGroup() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
-  const [groupName, setGroupName] = useState("");
+  const [groupId, setGroupId] = useState("");
 
-  const handleCreateGroup = () => {
-    // ... existing code ...
-    
+  const handleJoinGroup = () => {
+    // Logic to join the group using groupId
   };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-        <View style={styles.header}>
-          <Pressable style={styles.backButton} onPress={() => router.back()}>
-            <Ionicons name="chevron-back" size={28} color="#007AFF" />
-          </Pressable>
-          <Text style={[styles.title, { color: theme.text, fontSize: 34 }]}>New Group</Text>
-        </View>
+      <View style={styles.header}>
+        <Pressable style={styles.backButton} onPress={() => router.back()}>
+          <Ionicons name="chevron-back" size={28} color="#007AFF" />
+        </Pressable>
+        <Text style={[styles.title, { color: theme.text, fontSize: 34 }]}>Join Group</Text>
+      </View>
       <View style={[styles.card, { backgroundColor: theme.card }]}>
         <View style={styles.inputContainer}>
           <TextInput
             style={[styles.input, { color: theme.text, borderColor: theme.border }]}
-            placeholder="Enter group name"
+            placeholder="Enter group ID"
             placeholderTextColor={theme.secondaryText}
-            value={groupName}
-            onChangeText={setGroupName}
+            value={groupId}
+            onChangeText={setGroupId}
           />
         </View>
-        <Pressable style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleCreateGroup}>
-          <Ionicons name="add-circle-outline" size={20} color="white" />
-          <Text style={styles.buttonText}>Create Group</Text>
+        <Pressable style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleJoinGroup}>
+          <Ionicons name="enter-outline" size={20} color="white" />
+          <Text style={styles.buttonText}>Join Group</Text>
         </Pressable>
       </View>
     </SafeAreaView>

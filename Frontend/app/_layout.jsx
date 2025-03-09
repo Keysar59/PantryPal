@@ -52,6 +52,12 @@ export default function RootLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen 
+        name="join_group"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

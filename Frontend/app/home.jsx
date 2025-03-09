@@ -53,7 +53,7 @@ export default function Home() {
             backgroundColor: theme.card,
             borderColor: '#007AFF'
           }]} 
-          onPress={() => {}}
+          onPress={() => router.push('/join_group')}
         >
           <Ionicons name="enter-outline" size={20} color="#007AFF" />
           <Text style={styles.secondaryButtonText}>Join Group</Text>
