@@ -61,14 +61,23 @@ def login(user_data: User, response: Response,
     return {"message": "Login successful", "user": user_data.email}
     
 
-#retrive cookie
 @router.get("/status")
-def check_status(request: Request):
+def check_status(
+    request: Request, 
+    authentication_service: AuthenticationService = Depends(get_authentication_service)
+):
     token = request.cookies.get("session_token")
-    #check if token is valid
+
     if not token:
-        return {"authorized": False}
-    return {"authorized": True}
+        return {"authorized": False, "message": "No session token found"}
+
+    user_email = authentication_service.verify_token(token)  # Verify token
+
+    if not user_email:
+        return {"authorized": False, "message": "Invalid or expired token"}
+
+    return {"authorized": True, "user": user_email}
+
 
 
 
