@@ -7,6 +7,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
 # C extensions
 *.so
 
@@ -123,7 +128,10 @@ celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
-
+# Ignore all compiled Python files
+__pycache__/
+*.pyc
+*.pyo
 # Environments
 .env
 .venv
