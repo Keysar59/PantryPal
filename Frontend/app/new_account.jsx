@@ -12,24 +12,8 @@ import {
   import { Ionicons } from "@expo/vector-icons";
   import { useRouter } from "expo-router";
   
-  const Colors = {
-    light: {
-      background: '#F2F2F7',
-      card: '#FFFFFF',
-      text: '#000000',
-      secondaryText: '#8E8E93',
-      border: '#E5E5EA',
-      primary: '#007AFF',
-    },
-    dark: {
-      background: '#000000',
-      card: '#1C1C1E',
-      text: '#FFFFFF',
-      secondaryText: '#8E8E93',
-      border: '#38383A',
-      primary: '#0A84FF',
-    },
-  };
+  import { Colors } from "../constants/Colors" ;
+
   
   export default function CreateAccount() {
     const router = useRouter();
