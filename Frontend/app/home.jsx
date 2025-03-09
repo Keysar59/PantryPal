@@ -44,7 +44,7 @@ export default function Home() {
       </View>
       
       <View style={styles.buttonContainer}>
-        <Pressable style={styles.button} onPress={() => {}}>
+        <Pressable style={styles.button} onPress={() => router.push('/new_group')}>
           <Ionicons name="add-circle-outline" size={20} color="white" />
           <Text style={styles.buttonText}>New Group</Text>
         </Pressable>

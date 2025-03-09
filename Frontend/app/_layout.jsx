@@ -46,6 +46,12 @@ export default function RootLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen 
+        name="new_group"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

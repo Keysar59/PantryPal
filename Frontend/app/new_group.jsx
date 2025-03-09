@@ -1,70 +1,42 @@
-import { Text, View, StyleSheet, Pressable, TextInput, SafeAreaView, useColorScheme, Alert } from "react-native";
-import { useRouter } from "expo-router";
+import { Text, View, StyleSheet, Pressable, TextInput, SafeAreaView, useColorScheme } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
-// Define theme colors
-const Colors = {
-  light: {
-    background: '#F2F2F7',
-    card: '#FFFFFF',
-    text: '#000000',
-    secondaryText: '#8E8E93',
-  },
-  dark: {
-    background: '#000000',
-    card: '#1C1C1E',
-    text: '#FFFFFF',
-    secondaryText: '#8E8E93',
-  },
-};
+import { Colors } from "../constants/Colors";
+import { useRouter } from "expo-router";
+import { useState } from "react";
 
 export default function NewGroup() {
+  const router = useRouter();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
-  const router = useRouter();
   const [groupName, setGroupName] = useState("");
 
-  const handleCreateGroup = async () => {
-    if (!groupName.trim()) {
-      Alert.alert("Error", "Group name cannot be empty.");
-      return;
-    }
-
-    try {
-      // Replace with your server endpoint
-      const response = await fetch('https://your-server.com/api/groups', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: groupName }),
-      });
-
-      if (response.ok) {
-        Alert.alert("Success", "Group created successfully!");
-        router.push('/home'); // Navigate to home or another page
-      } else {
-        Alert.alert("Error", "Failed to create group.");
-      }
-    } catch (error) {
-      Alert.alert("Error", "An error occurred while creating the group.");
-    }
+  const handleCreateGroup = () => {
+    // ... existing code ...
+    
   };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.title, { color: theme.text }]}>Create New Group</Text>
-      <TextInput
-        style={[styles.input, { color: theme.text, backgroundColor: theme.card }]}
-        placeholder="Enter group name"
-        placeholderTextColor={theme.secondaryText}
-        value={groupName}
-        onChangeText={setGroupName}
-      />
-      <Pressable style={styles.button} onPress={handleCreateGroup}>
-        <Ionicons name="checkmark" size={20} color="white" />
-        <Text style={styles.buttonText}>Create Group</Text>
-      </Pressable>
+        <View style={styles.header}>
+          <Pressable style={styles.backButton} onPress={() => router.back()}>
+            <Ionicons name="chevron-back" size={28} color="#007AFF" />
+          </Pressable>
+          <Text style={[styles.title, { color: theme.text, fontSize: 34 }]}>New Group</Text>
+        </View>
+      <View style={[styles.card, { backgroundColor: theme.card }]}>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={[styles.input, { color: theme.text, borderColor: theme.border }]}
+            placeholder="Enter group name"
+            placeholderTextColor={theme.secondaryText}
+            value={groupName}
+            onChangeText={setGroupName}
+          />
+        </View>
+        <Pressable style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleCreateGroup}>
+          <Text style={styles.buttonText}>Create Group</Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }
@@ -74,24 +46,45 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  title: {
-    fontSize: 34,
-    fontWeight: 'bold',
+  card: {
+    borderRadius: 12,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 16,
+  },
+  backButton: {
+    padding: 8,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  inputContainer: {
+    marginBottom: 24,
   },
   input: {
-    height: 50,
+    borderWidth: 1,
     borderRadius: 12,
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    padding: 12,
     fontSize: 16,
+    marginBottom: 16,
   },
   button: {
-    backgroundColor: '#007AFF',
+    flexDirection: 'row',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 8,
   },
   buttonText: {
     color: 'white',
