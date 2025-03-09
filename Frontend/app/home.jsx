@@ -2,22 +2,8 @@ import { Text, View, StyleSheet, Pressable, SafeAreaView, useColorScheme } from 
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 // Define theme colors
-const Colors = {
-  light: {
-    background: '#F2F2F7',
-    card: '#FFFFFF',
-    text: '#000000',
-    secondaryText: '#8E8E93',
-    border: '#E5E5EA',
-  },
-  dark: {
-    background: '#000000',
-    card: '#1C1C1E',
-    text: '#FFFFFF',
-    secondaryText: '#8E8E93',
-    border: '#38383A',
-  },
-};
+import { Colors } from "../constants/Colors" ;
+
 export default function Home() {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];

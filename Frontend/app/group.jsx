@@ -3,24 +3,10 @@ import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 // Define theme colors (same as in index.jsx)
-const Colors = {
-  light: {
-    background: '#F2F2F7',
-    card: '#FFFFFF',
-    text: '#000000',
-    secondaryText: '#8E8E93',
-    border: '#E5E5EA',
-    tabBackground: '#E5E5EA',
-  },
-  dark: {
-    background: '#000000',
-    card: '#1C1C1E',
-    text: '#FFFFFF',
-    secondaryText: '#8E8E93',
-    border: '#38383A',
-    tabBackground: '#1C1C1E',
-  },
-};
+
+import { Colors } from "../constants/Colors" ;
+
+
 export default function Group() {
   const router = useRouter();
   const colorScheme = useColorScheme();
