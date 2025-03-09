@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView, useColorScheme } from "react-native";
+import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView, useColorScheme, Alert } from "react-native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -91,6 +91,24 @@ export default function Group() {
         currentList.filter(item => item.id !== itemId)
       );
     }
+  };
+  const handleDeleteList = () => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete the list?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            // Add your delete list logic here
+          }
+        }
+      ]
+    );
   };
   const renderItem = (item, isPantry = false) => (
     <Pressable 
@@ -218,11 +236,14 @@ export default function Group() {
               </View>
             )}
             <View style={styles.buttonContainer}>
-              <Pressable style={styles.button} onPress={() => {}}>
+            <Pressable
+               style={styles.button} 
+               onPress={() => router.push('/add_product')}
+               >
                 <Ionicons name="add" size={20} color="white" />
                 <Text style={styles.buttonText}>Add Product</Text>
               </Pressable>
-              <Pressable style={[styles.button, styles.warningButton]} onPress={() => {}}>
+              <Pressable style={[styles.button, styles.warningButton]} onPress={handleDeleteList}>
                 <Ionicons name="trash" size={20} color="white" />
                 <Text style={styles.buttonText}>Delete List</Text>
               </Pressable>
@@ -243,7 +264,10 @@ export default function Group() {
               </View>
             )}
             <View style={styles.buttonContainer}>
-              <Pressable style={styles.button} onPress={() => {}}>
+              <Pressable
+               style={styles.button} 
+               onPress={() => router.push('/add_product')}
+               >
                 <Ionicons name="add" size={20} color="white" />
                 <Text style={styles.buttonText}>Add Product</Text>
               </Pressable>
