@@ -11,7 +11,24 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import Animated, { FadeIn } from "react-native-reanimated";
 
-import { Colors } from "../constants/Colors" ;
+const Colors = {
+  light: {
+    background: '#F2F2F7',
+    card: '#FFFFFF',
+    text: '#000000',
+    secondaryText: '#8E8E93',
+    border: '#E5E5EA',
+    primary: '#FF3B30',
+  },
+  dark: {
+    background: '#000000',
+    card: '#1C1C1E',
+    text: '#FFFFFF',
+    secondaryText: '#8E8E93',
+    border: '#38383A',
+    primary: '#FF453A',
+  },
+};
 
 
 export default function Unlucky() {
