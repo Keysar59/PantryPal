@@ -21,6 +21,7 @@ export const Colors = {
     text: '#FFFFFF',
     secondaryText: '#8E8E93',
     border: '#38383A',
+    tabBackgroud: '#1C1C1E',
     primary: '#0A84FF',
   },
 };
