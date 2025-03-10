@@ -12,6 +12,8 @@ PantryPalFront/*
 !vscode/welcome/app/**
 !PantryPalFront/app/**
 
+*.pyc
+__pycache__/
 
 ### react ###
 .DS_*
