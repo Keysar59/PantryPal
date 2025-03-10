@@ -83,7 +83,7 @@ export default function AddProduct() {
           </Pressable>
           <Pressable
             style={[styles.button, styles.successButton]}
-            onPress={() => router.push("/scan")}
+            onPress={() => router.push("/scanner")}
           >
             <Ionicons name="barcode" size={20} color="white" />
             <Text style={styles.buttonText}>Scan Barcode</Text>
