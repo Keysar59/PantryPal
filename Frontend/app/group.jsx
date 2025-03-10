@@ -23,8 +23,6 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
  };
  
 //  import { Colors } from "../constants/Colors" ;
- 
- 
  export default function Group() {
    const router = useRouter();
    const colorScheme = useColorScheme();

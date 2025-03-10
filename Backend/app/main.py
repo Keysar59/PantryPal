@@ -14,6 +14,8 @@ app = FastAPI(redoc_url="/redoc")
 origins = [
     "http://localhost:3000",
     "http://localhost:8000",
+    "*",
+
 ]
 
 app.add_middleware(

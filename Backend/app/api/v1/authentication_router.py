@@ -49,7 +49,7 @@ def login(user_data: User, response: Response,
         httponly=True,
         max_age=int(timedelta(weeks=20).total_seconds()),
         samesite="Lax",
-        secure=True
+        secure=False
     )
 
     return {"message": "Login successful", "user": user_data.email}
