@@ -16,7 +16,7 @@ load_dotenv()
 class GroupRepositorySQL(GroupRepositoryInterface):
     def __init__(self):
         """
-        Initiate the repository. Creates tables in necessary.
+        Initiate the repository. Creates tables if necessary.
         """
         self.db_url = os.getenv("DATABASE_URL")
         # self._delete_tables()
