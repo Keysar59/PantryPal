@@ -9,16 +9,59 @@ import {
     Platform, 
     useColorScheme 
   } from 'react-native';
-  import { Ionicons } from "@expo/vector-icons";
+  import { Ionicons, MaterialIcons } from "@expo/vector-icons";
   import { useRouter } from "expo-router";
-  
   import { Colors } from "../constants/Colors" ;
-
+  import React, { useState } from 'react';
   
   export default function CreateAccount() {
     const router = useRouter();
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
+  
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
+  
+    const handleCreateAccount = () => {
+      
+      // Check for empty fields
+      if (!email && !password) {
+        setError('Email and password cannot be empty.');
+        return; 
+      }
+      if(!email){
+        setError('Email cannot be empty.');
+        return; 
+      }
+      if(!password){
+        setError('Password cannot be empty.');
+        return; 
+      }
+      
+      // Check for commas in inputs
+      const commaRegex = /,/; // Regular expression to check for commas
+      if (commaRegex.test(email)) {
+        setError('Email cannot contain a comma.');
+        return;
+      }
+      if (commaRegex.test(password)) {
+        setError('Password cannot contain a comma.');
+        return;
+      }
+      
+  
+      // Check if passwords match
+      if (password !== confirmPassword) {
+        setError('Passwords do not match.');
+        return;
+      }
+  
+      setError(''); // Clear error if inputs are valid
+      // Add your create account logic here
+      router.push('/home'); // Navigate to home or another page after successful account creation
+    };
   
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
@@ -32,35 +75,40 @@ import {
             
             <TextInput
               style={[styles.input, { borderColor: theme.border, color: theme.text }]}
-              placeholder="Full Name"
-              placeholderTextColor={theme.secondaryText}
-              autoCapitalize="words"
-            />
-            <TextInput
-              style={[styles.input, { borderColor: theme.border, color: theme.text }]}
               placeholder="Email"
               placeholderTextColor={theme.secondaryText}
               keyboardType="email-address"
               autoCapitalize="none"
+              onChangeText={setEmail}
+              value={email}
             />
             <TextInput
               style={[styles.input, { borderColor: theme.border, color: theme.text }]}
               placeholder="Password"
               placeholderTextColor={theme.secondaryText}
               secureTextEntry
+              onChangeText={setPassword}
+              value={password}
             />
             <TextInput
               style={[styles.input, { borderColor: theme.border, color: theme.text }]}
               placeholder="Confirm Password"
               placeholderTextColor={theme.secondaryText}
               secureTextEntry
+              onChangeText={setConfirmPassword}
+              value={confirmPassword}
             />
+            
+            {error ? (
+              <View style={styles.errorContainer}>
+                <MaterialIcons name="error-outline" size={20} color="red" />
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            ) : null}
             
             <Pressable 
               style={[styles.button, { backgroundColor: theme.primary }]} 
-              onPress={() => {
-                // Add your create account logic here
-              }}
+              onPress={handleCreateAccount}
             >
               <Ionicons name="person-add-outline" size={20} color="white" />
               <Text style={styles.buttonText}>Create Account</Text>
@@ -137,6 +185,20 @@ import {
     switchText: {
       fontSize: 14,
       textDecorationLine: 'underline',
+    },
+    errorContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderColor: 'red',
+      borderWidth: 1,
+      borderRadius: 8,
+      padding: 10,
+      marginBottom: 16,
+    },
+    errorText: {
+      color: 'red',
+      marginLeft: 8,
+      fontWeight: 'bold',
     },
   });
   
