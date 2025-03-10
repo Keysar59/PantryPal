@@ -14,12 +14,6 @@ def signup(user_data: User, response: Response,
     """
     print(user_data)
     user, token = authentication_service.signup_user(user_data)
-    
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User could not be created (user null)"
-        )
 
     payload = authentication_service.create_token(user.email)
 
@@ -35,14 +29,49 @@ def signup(user_data: User, response: Response,
 
     return {"message": "User created successfully", "user": "testuser"}
 
-#retrive cookie
-@router.get("/status")
-def check_status(request: Request):
-    token = request.cookies.get("session_token")
-    #check if token is valid
+@router.post("/login")
+def login(user_data: User, response: Response, 
+          authentication_service: AuthenticationService = Depends(get_authentication_service)):
+    """
+    Handles user login, verifies credentials, and sets a session cookie.
+    """
+    token = authentication_service.login_user(user_data)
+    
     if not token:
-        return {"authorized": False}
-    return {"authorized": True}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password"
+        )
+
+    response.set_cookie(
+        key="session_token",
+        value=token,
+        httponly=True,
+        max_age=int(timedelta(weeks=20).total_seconds()),
+        samesite="Lax",
+        secure=True
+    )
+
+    return {"message": "Login successful", "user": user_data.email}
+    
+
+@router.get("/status")
+def check_status(
+    request: Request, 
+    authentication_service: AuthenticationService = Depends(get_authentication_service)
+):
+    token = request.cookies.get("session_token")
+
+    if not token:
+        return {"authorized": False, "message": "No session token found"}
+
+    user_email = authentication_service.verify_token(token)  # Verify token
+
+    if not user_email:
+        return {"authorized": False, "message": "Invalid or expired token"}
+
+    return {"authorized": True, "user": user_email}
+
 
 
 

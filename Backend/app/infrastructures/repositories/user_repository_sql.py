@@ -13,7 +13,7 @@ load_dotenv()
 class UserRepositorySQL(UserRepositoryInterface):
     def __init__(self):
         self.db_url = os.getenv("DATABASE_URL")
-        # self._delete_table()
+        self._delete_table()
         self._create_table()
 
     def _get_connection(self):
@@ -24,8 +24,7 @@ class UserRepositorySQL(UserRepositoryInterface):
         """Initialize the users table if it doesn't exist"""
         query = '''
         CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            email VARCHAR(255) NOT NULL UNIQUE,
+            email VARCHAR(255) PRIMARY KEY,
             password TEXT NOT NULL
         )
         '''
@@ -42,18 +41,15 @@ class UserRepositorySQL(UserRepositoryInterface):
                 cursor.execute(query)
                 conn.commit()
 
-
-
     def create_user(self, user_data: User):
         """Inserts a new user into the database."""
         query = '''
         INSERT INTO users (email, password) 
-        VALUES (%s, %s) RETURNING id
+        VALUES (%s, %s)
         '''
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
-                cursor.execute(query, (user_data.email, user_data.password))  # Only two values
-                user_id = cursor.fetchone()[0]
+                cursor.execute(query, (user_data.email, user_data.password))
                 conn.commit()
         return user_data
 
@@ -73,7 +69,18 @@ class UserRepositorySQL(UserRepositoryInterface):
             with conn.cursor() as cursor:
                 cursor.execute(query, (email,))
                 return cursor.fetchone() is not None
-            
+
+    def get_user_by_email(self, user_email: str) -> Optional[User]:
+        """Fetches a user by email."""
+        query = "SELECT email, password FROM users WHERE email = %s"
+        with self._get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (user_email,))
+                result = cursor.fetchone()
+                if result:
+                    return User(email=result["email"], password=result["password"])
+        return None
+
     def get_data(self):
         query = "SELECT * FROM users"
         with self._get_connection() as conn:
