@@ -15,8 +15,6 @@ export default function Page() {
 
         const data = await response.json();
 
-        console.log("data:", data)
-
         // If authorized is false, redirect to login
         setAuthorized(data.authorized);
       } catch (error) {
