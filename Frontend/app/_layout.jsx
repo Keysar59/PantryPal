@@ -58,6 +58,13 @@ export default function RootLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen 
+        name="scanner"
+        options={{
+          headerShown: false,
+        }}
+      />
+      
     </Stack>
   );
 }
