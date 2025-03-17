@@ -62,16 +62,20 @@ class ListRepositorySQL(ProductsListRepositoryInterface):
 
 
     def add_product_to_list(self, list_id: int, product: Product, quantity: int) -> bool:
+        """
+        Adds product to list, if exists already adds quantity to current amount.
+        """
 
         product_id = product.product_id
     
+        # Checks if product exists in list already.
         query = "SELECT quantity FROM list_to_products WHERE list_id = %s and product_id = %s"
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query, (list_id, product_id))
                 results = cursor.fetchone()
 
-        if results:
+        if results:  # If exists adds the quantity to current amount.
             new_amount = int(results[0]) + quantity
             query = "UPDATE list_to_products SET quantity = %s WHERE list_id = %s and product_id = %s"
             with self._get_connection() as conn:
@@ -80,7 +84,7 @@ class ListRepositorySQL(ProductsListRepositoryInterface):
 
             return True
             
-        else:
+        else:  # If it doesn't, adds it to the list with given quantity.
             query = '''
             INSERT INTO list_to_products (list_id, product_id, product_name, image_url, quantity) 
             VALUES (%s, %s, %s, %s, %s)
@@ -94,47 +98,18 @@ class ListRepositorySQL(ProductsListRepositoryInterface):
 
         return False
 
-    def add_product_to_list(self, list_id: int, product: Product, quantity: int) -> bool:
-
-        product_id = product.product_id
-    
-        query = "SELECT quantity FROM list_to_products WHERE list_id = %s and product_id = %s"
-        with self._get_connection() as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(query, (list_id, product_id))
-                results = cursor.fetchone()
-
-        if results:
-            new_amount = int(results[0]) + quantity
-            query = "UPDATE list_to_products SET quantity = %s WHERE list_id = %s and product_id = %s"
-            with self._get_connection() as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute(query, (new_amount, list_id, product_id))
-
-            return True
-            
-        else:
-            query = '''
-            INSERT INTO list_to_products (list_id, product_id, product_name, image_url, quantity) 
-            VALUES (%s, %s, %s, %s, %s)
-            '''
-            with self._get_connection() as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute(query, (list_id, product.product_id, product.product_name, product.product_image_url, quantity))
-                    conn.commit()
-            
-            return True
-
-        return False
 
     def remove_product_from_list(self, list_id: int, product_id: str, quantity: int):
+        """
+        Removes product from list, if quantity is 0 after removal, deletes the entry from the table. 
+        """
         query = "SELECT quantity FROM list_to_products WHERE list_id = %s and product_id = %s"
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query, (list_id, product_id))
                 results = cursor.fetchone()
 
-        if results and results[0] == quantity:
+        if results and results[0] == quantity:  # If quantity is same as current amount deletes entry.
             query = "DELETE FROM list_to_products WHERE list_id = %s and product_id = %s"
             with self._get_connection() as conn:
                 with conn.cursor() as cursor:
@@ -142,7 +117,7 @@ class ListRepositorySQL(ProductsListRepositoryInterface):
 
             return True
             
-        elif results and results[0] > quantity:
+        elif results and results[0] > quantity: # Else if the amount is greater then the quantity to remove, removes quantity from current amount.
             new_amount = int(results[0]) - quantity
             query = "UPDATE list_to_products SET quantity = %s WHERE list_id = %s and product_id = %s"
             with self._get_connection() as conn:
@@ -153,12 +128,26 @@ class ListRepositorySQL(ProductsListRepositoryInterface):
 
         return False
 
-    def get_products_from_list(self, list_id: int) -> list[Product, int]:
+    def get_products_from_list(self, list_id: int) -> list[tuple[Product, int]]:
+        """
+        Fetches the products from a certain list, returns a list of tuples where the first cell is the product and the second is it's amount.
+        """
+
         query = "SELECT product_id, product_name, image_url, quantity FROM list_to_products WHERE list_id = %s"
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query, (list_id, ))
                 results = cursor.fetchall()
         
-        return results
+        # Transform results to match the return type.
+        transformed_results = []
+        for product_id, product_name, image_url, quantity in results:
+            product = Product(
+                product_id=product_id,
+                product_name=product_name,
+                product_image_url=image_url
+            )
+            transformed_results.append((product, quantity))
+        
+        return transformed_results
         

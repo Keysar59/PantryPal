@@ -10,6 +10,12 @@ router = APIRouter()
 @router.post("/add_product_to_list")
 def add_product_to_list(list_id: int, product: Product, quantity: int,
                         list_service: ListManagementService = Depends(get_list_management_service)):
+    """
+    Adds a product to specified list.
+    :param list_id: The id of the list.
+    :param product: The product to add.
+    :param quantity: The quantity of the product to add.
+    """
     success = list_service.add_product_to_list(list_id, product, quantity)
 
     if not success:
@@ -20,6 +26,11 @@ def add_product_to_list(list_id: int, product: Product, quantity: int,
 @router.post("/add_list_of_products_to_list")
 def add_list_of_products_to_list(list_id: int, response: Response, products_to_add: list[tuple[Product, int]],
                                  list_service: ListManagementService = Depends(get_list_management_service)):
+    """
+    Adds multiple products to specified list.
+    :param list_id: The id of the list.
+    :param products_to_add: A list of tuples containing products and their quantities.
+    """
     success = list_service.add_list_of_products_to_list(list_id, products_to_add)
 
     if not success:
@@ -30,6 +41,12 @@ def add_list_of_products_to_list(list_id: int, response: Response, products_to_a
 @router.post("/remove_product_from_list")
 def remove_product_from_list(list_id: int, response: Response, product_id: str, quantity: int,
                              list_service: ListManagementService = Depends(get_list_management_service)):
+    """
+    Removes a product from specified list.
+    :param list_id: The id of the list.
+    :param product_id: The id of the product to remove.
+    :param quantity: The quantity of the product to remove.
+    """
     success = list_service.remove_product_from_list(list_id, product_id, quantity)
 
     if not success:
@@ -40,6 +57,11 @@ def remove_product_from_list(list_id: int, response: Response, product_id: str, 
 @router.post("/remove_list_of_products_from_list")
 def remove_list_of_products_from_list(list_id: int, response: Response, products_to_remove: list[tuple[str, int]],
                                       list_service: ListManagementService = Depends(get_list_management_service)):
+    """
+    Removes multiple products from specified list.
+    :param list_id: The id of the list.
+    :param products_to_remove: A list of tuples containing product ids and quantities to remove.
+    """
     success = list_service.remove_list_of_products_from_list(list_id, products_to_remove)
 
     if not success:
@@ -50,6 +72,10 @@ def remove_list_of_products_from_list(list_id: int, response: Response, products
 @router.post("/get_products_from_list")
 def get_products_from_list(list_id: int,
                            list_service: ListManagementService = Depends(get_list_management_service)):
+    """
+    Fetches all products from specified list.
+    :param list_id: The id of the list.
+    """
     products = list_service.get_products_from_list(list_id)
 
     if products is None:
