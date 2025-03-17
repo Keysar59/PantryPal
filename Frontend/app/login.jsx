@@ -3,6 +3,10 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Colors } from "../constants/Colors" ;
 import React, { useState } from 'react';
+import {SERVER_URL} from "../constants/network";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 
 export default function Login() {
   const router = useRouter();
@@ -13,22 +17,22 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     if (!email && !password) {
       setError('Email and password cannot be empty.');
-      return; 
+      return;
     }
-    if(!email){
+    if (!email) {
       setError('Email cannot be empty.');
-      return; 
+      return;
     }
-    if(!password){
+    if (!password) {
       setError('Password cannot be empty.');
-      return; 
+      return;
     }
-
+  
     // Check for commas in inputs
-    const commaRegex = /,/; // Regular expression to check for commas
+    const commaRegex = /,/;
     if (commaRegex.test(email)) {
       setError('Email cannot contain a comma.');
       return;
@@ -37,9 +41,40 @@ export default function Login() {
       setError('Password cannot contain a comma.');
       return;
     }
-    setError(''); // Clear error if inputs are valid
-    router.push('/home'); // Navigate to home if inputs are valid
+  
+    setError(''); // Clear errors before sending request
+  
+    try {
+      const response = await fetch(`${SERVER_URL}auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        setError(data.detail || 'Login failed. Please try again.');
+        return;
+      }
+  
+      // Store token (if authentication is successful)
+      // if (Platform.OS === 'web') {
+      //   console.log("im in web")
+      //   localStorage.setItem('token', data.access_token);
+      // } else {
+      //   await AsyncStorage.setItem('token', data.access_token);
+      // }
+      router.push('/home'); // Navigate to home on successful login
+      } catch (error) {
+        console.error('Login error:', error);
+        setError('An error occurred. Please try again later.');
+    }
   };
+  
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>

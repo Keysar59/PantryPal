@@ -13,6 +13,10 @@ import {
   import { useRouter } from "expo-router";
   import { Colors } from "../constants/Colors" ;
   import React, { useState } from 'react';
+
+  import AsyncStorage from '@react-native-async-storage/async-storage';
+
+  import { SERVER_URL } from '../constants/network';
   
   export default function CreateAccount() {
     const router = useRouter();
@@ -24,7 +28,7 @@ import {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
   
-    const handleCreateAccount = () => {
+    const handleCreateAccount = async () => {
       
       // Check for empty fields
       if (!email && !password) {
@@ -50,12 +54,44 @@ import {
         setError('Password cannot contain a comma.');
         return;
       }
-      
-  
       // Check if passwords match
       if (password !== confirmPassword) {
         setError('Passwords do not match.');
         return;
+      }
+
+      setError('');
+      console.log("serverurl:", SERVER_URL);
+
+      try {
+        const response = await fetch(`${SERVER_URL}auth/signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+          credentials: 'include',
+        });
+    
+        const data = await response.json();
+    
+        if (!response.ok) {
+          setError(data.detail || 'Sign up failed. Please try again.');
+          return;
+        }
+    
+        // Store token (if authentication is successful)
+        // if (Platform.OS === 'web') {
+        //   localStorage.setItem('token', data.access_token);
+        // } else {
+        //   await AsyncStorage.setItem('token', data.access_token);
+        // }
+
+
+        router.push('/home'); // Navigate to home on successful login
+      } catch (error) {
+        console.error('Login error:', error);
+        setError('An error occurred. Please try again later.');
       }
   
       setError(''); // Clear error if inputs are valid
