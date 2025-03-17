@@ -41,7 +41,13 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen 
-        name="add_product"
+        name="add_product_shopping"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen 
+        name="add_product_pantry"
         options={{
           headerShown: false,
         }}

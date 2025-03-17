@@ -8,7 +8,8 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
-  useColorScheme
+  useColorScheme,
+  Alert
 } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from 'expo-router';
@@ -24,6 +25,46 @@ export default function AddProduct() {
   const [quantity, setQuantity] = useState('');
 
   const handleAddProduct = async () => {
+    if (!productName && !quantity) {
+      setError('Name and quantity cannot be empty.');
+      return; 
+    }
+    if(!productName){
+      setError('Name cannot be empty.');
+      return; 
+    }
+    if(!quantity){
+      setError('Quantity cannot be empty.');
+      return; 
+    }
+
+    // Check for commas in inputs
+    const commaRegex = /,/; // Regular expression to check for commas
+    if (commaRegex.test(email)) {
+      setError('Email cannot contain a comma.');
+      return;
+    }
+    if (commaRegex.test(password)) {
+      setError('Password cannot contain a comma.');
+      return;
+    }
+    setError(''); // Clear error if inputs are valid
+    router.push('/home'); // Navigate to home if inputs are valid
+
+    Alert.alert(
+      "Adding Product",
+      `Product: ${productName}, Quantity: ${quantity}`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Add Product",
+          onPress: () => router.push('/add_product_shopping')
+        }
+      ]
+    );
     // Here you would send the product info to your server.
     // Example using fetch:
     /*
@@ -45,8 +86,7 @@ export default function AddProduct() {
       console.error('Error adding product:', error);
     }
     */
-    console.log(`Product: ${productName}, Quantity: ${quantity}`);
-    router.push('/products');
+    // router.push('/add_pr');
   };
 
   return (
@@ -79,7 +119,7 @@ export default function AddProduct() {
           />
           <Pressable style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleAddProduct}>
             <Ionicons name="add-outline" size={20} color="white" />
-            <Text style={styles.buttonText}>Add Product</Text>
+            <Text style={styles.buttonText}>Add Product to the Shopping List</Text>
           </Pressable>
           <Pressable
             style={[styles.button, styles.successButton]}

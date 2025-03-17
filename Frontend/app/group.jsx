@@ -275,7 +275,7 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
              <View style={styles.buttonContainer}>
              <Pressable
                 style={styles.button} 
-                onPress={() => router.push('/add_product')}
+                onPress={() => router.push('/add_product_shopping')}
                 >
                  <Ionicons name="add" size={20} color="white" />
                  <Text style={styles.buttonText}>Add Product</Text>
@@ -303,7 +303,7 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
              <View style={styles.buttonContainer}>
                <Pressable
                 style={styles.button} 
-                onPress={() => router.push('/add_product')}
+                onPress={() => router.push('/add_product_pantry')}
                 >
                  <Ionicons name="add" size={20} color="white" />
                  <Text style={styles.buttonText}>Add Product</Text>
