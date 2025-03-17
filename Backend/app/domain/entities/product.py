@@ -1,15 +1,16 @@
 import json
+from pydantic import BaseModel
 
-class Product:
+class Product(BaseModel):
     product_id: str
     product_name: str
     product_image_url: str
     # there is no product description in the json data
     
-    def __init__(self, product_id: str, product_name: str, product_image_url: str):
+    """def __init__(self, product_id: str, product_name: str, product_image_url: str):
         self.product_id = product_id
         self.product_name = product_name
-        self.product_image_url = product_image_url
+        self.product_image_url = product_image_url"""
 
 class ProductEncoder(json.JSONEncoder):
     def default(self, obj):

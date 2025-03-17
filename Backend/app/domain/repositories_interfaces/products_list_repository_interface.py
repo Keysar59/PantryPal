@@ -5,14 +5,14 @@ class ProductsListRepositoryInterface:
     def add_product_to_list(self, list_id: int, product: Product, quantity: int) -> bool:
         pass
 
-    def add_list_of_products_to_list(self, list_id: int, products_to_add: list[Product, int]) -> bool:
+    def add_list_of_products_to_list(self, list_id: int, products_to_add: list[tuple[Product, int]]) -> bool:
         pass
 
-    def remove_product_from_list(self, list_id: int, product: Product, quantity: int) -> bool:
+    def remove_product_from_list(self, list_id: int, product_id: str, quantity: int) -> bool:
         pass
 
-    def remove_list_of_products_from_list(self, list_id: int, products_to_add: list[Product, int]) -> bool:
+    def remove_list_of_products_from_list(self, list_id: int, products_to_remove: list[tuple[str, int]]) -> bool:
         pass
     
-    def get_products_from_list(self, list_id: int) -> list[Product, int]:
+    def get_products_from_list(self, list_id: int) -> list[tuple[Product, int]]:
         pass

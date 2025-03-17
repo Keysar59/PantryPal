@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response, HTTPException, status, Depends
 from app.services.list_management_service import ListManagementService
-from app.domain.entities.prodcuts_list import ProductsList
+from app.domain.entities.products_list import ProductsList
 from app.domain.entities.product import Product
 from fastapi import Request
 from app.infrastructures.dependency_injection import get_list_management_service
@@ -18,7 +18,7 @@ def add_product_to_list(list_id: int, product: Product, quantity: int,
     return {"message": "Product added successfully"}
 
 @router.post("/add_list_of_products_to_list")
-def add_list_of_products_to_list(list_id: int, products_to_add: list[Product, int],
+def add_list_of_products_to_list(list_id: int, response: Response, products_to_add: list[tuple[Product, int]],
                                  list_service: ListManagementService = Depends(get_list_management_service)):
     success = list_service.add_list_of_products_to_list(list_id, products_to_add)
 
@@ -28,9 +28,9 @@ def add_list_of_products_to_list(list_id: int, products_to_add: list[Product, in
     return {"message": "Products added successfully"}
 
 @router.post("/remove_product_from_list")
-def remove_product_from_list(list_id: int, product: Product, quantity: int,
+def remove_product_from_list(list_id: int, response: Response, product_id: str, quantity: int,
                              list_service: ListManagementService = Depends(get_list_management_service)):
-    success = list_service.remove_product_from_list(list_id, product, quantity)
+    success = list_service.remove_product_from_list(list_id, product_id, quantity)
 
     if not success:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Could not remove product")
@@ -38,7 +38,7 @@ def remove_product_from_list(list_id: int, product: Product, quantity: int,
     return {"message": "Product removed successfully"}
 
 @router.post("/remove_list_of_products_from_list")
-def remove_list_of_products_from_list(list_id: int, products_to_remove: list[Product, int],
+def remove_list_of_products_from_list(list_id: int, response: Response, products_to_remove: list[tuple[str, int]],
                                       list_service: ListManagementService = Depends(get_list_management_service)):
     success = list_service.remove_list_of_products_from_list(list_id, products_to_remove)
 
@@ -52,7 +52,10 @@ def get_products_from_list(list_id: int,
                            list_service: ListManagementService = Depends(get_list_management_service)):
     products = list_service.get_products_from_list(list_id)
 
-    if not products:
+    if products is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Couldn't fetch products")
+
+    if not products:
+        return {"message": "No products found.", "products": products}
 
     return {"message": "Products fetched successfully", "products": products}
