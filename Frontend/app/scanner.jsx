@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, Button, Alert, Pressable, useColorScheme } from "react-native";
 import { CameraView, Camera } from "expo-camera";
-import { useRouter } from "expo-router";
+import { useRouter,useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function Scanner() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const colorScheme = useColorScheme();
+  // console.log(params.from);
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -32,7 +34,7 @@ export default function Scanner() {
         },
         {
           text: "Add Product",
-          onPress: () => router.push('/add_product')
+          onPress: () => router.push(`/${params.from}?barcode=${encodeURIComponent(data)}`)
         }
       ]
     );
