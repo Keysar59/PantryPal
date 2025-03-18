@@ -16,3 +16,4 @@ class ProductsListRepositoryInterface:
     
     def get_products_from_list(self, list_id: int) -> list[tuple[Product, int]]:
         pass
+
