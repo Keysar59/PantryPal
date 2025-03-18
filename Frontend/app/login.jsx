@@ -60,14 +60,7 @@ export default function Login() {
         setError(data.detail || 'Login failed. Please try again.');
         return;
       }
-  
-      // Store token (if authentication is successful)
-      // if (Platform.OS === 'web') {
-      //   console.log("im in web")
-      //   localStorage.setItem('token', data.access_token);
-      // } else {
-      //   await AsyncStorage.setItem('token', data.access_token);
-      // }
+
       router.push('/home'); // Navigate to home on successful login
       } catch (error) {
         console.error('Login error:', error);

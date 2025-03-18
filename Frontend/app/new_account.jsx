@@ -79,13 +79,6 @@ import {
           setError(data.detail || 'Sign up failed. Please try again.');
           return;
         }
-    
-        // Store token (if authentication is successful)
-        // if (Platform.OS === 'web') {
-        //   localStorage.setItem('token', data.access_token);
-        // } else {
-        //   await AsyncStorage.setItem('token', data.access_token);
-        // }
 
 
         router.push('/home'); // Navigate to home on successful login
