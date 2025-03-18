@@ -52,9 +52,17 @@ class AuthenticationService:
         """
         Verifies the JWT token and returns the user if valid.
         """
+
+        if not token:
+            print("no token")
+            raise InvalidTokenException()
+        
         try:
             payload = pyjwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             user_email = payload.get("sub")
+            if not user_email:
+                print("token invalid no user email")
+                InvalidTokenException()
             return self.user_repository.user_exists(user_email)
         
         except pyjwt.ExpiredSignatureError:

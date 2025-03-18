@@ -20,12 +20,11 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],  # Or specify your frontend domain, e.g., ["http://localhost:3000"]
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
 )
-
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
