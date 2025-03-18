@@ -16,7 +16,7 @@ class GroupManagementService:
 
         new_group_id = self.group_repository.create_group(group_name, user_email)
 
-        self.group_repository.add_user_to_group(new_group_id, user_email)
+        self.group_repository.add_user_to_group(new_group_id, group_name, user_email)
         self.group_repository.promote_user_to_admin(new_group_id, user_email)
         return new_group_id
 
@@ -38,7 +38,9 @@ class GroupManagementService:
         :param user_email: The email of the user to add to the group.
         """
 
-        return self.group_repository.add_user_to_group(group_id, user_email)
+        group_name = self.get_group_name_by_id(group_id)
+
+        return self.group_repository.add_user_to_group(group_id, group_name, user_email)
 
     
     def leave_group(self, group_id: int, user_email: str):
@@ -71,7 +73,7 @@ class GroupManagementService:
         return self.group_repository.demote_admin_to_user(group_id, user_email)
 
 
-    def get_groups_by_user_email(self, user_email: str) -> list[int]:
+    def get_groups_by_user_email(self, user_email: str) -> list[tuple[int, str]]:
         """
         Gets all groups a user is in.
         :param user_email: The email of the user.
