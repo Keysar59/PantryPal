@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, Pressable, TextInput, SafeAreaView, useColorScheme } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -9,10 +9,16 @@ export default function NewGroup() {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
   const [groupName, setGroupName] = useState("");
+  const [error, setError] = useState('');
 
   const handleCreateGroup = () => {
+    if (!groupName) {
+      setError('Group name cannot be empty.');
+      return;
+    }
+
+    setError('');
     // ... existing code ...
-    
   };
 
   return (
@@ -33,6 +39,12 @@ export default function NewGroup() {
             onChangeText={setGroupName}
           />
         </View>
+        {error ? (
+          <View style={styles.errorContainer}>
+            <MaterialIcons name="error-outline" size={20} color="red" />
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        ) : null}
         <Pressable style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleCreateGroup}>
           <Ionicons name="add-circle-outline" size={20} color="white" />
           <Text style={styles.buttonText}>Create Group</Text>
@@ -91,5 +103,18 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: 'red',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: 'red',
+    fontWeight: 'bold',
   },
 });
