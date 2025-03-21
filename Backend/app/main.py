@@ -20,7 +20,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Or specify your frontend domain, e.g., ["http://localhost:3000"]
+    allow_origins=origins,  # Or specify your frontend domain, e.g., ["http://localhost:3000"]
     allow_credentials=True,
     allow_methods=["*"],  # Allow all methods
     allow_headers=["*"],  # Allow all headers

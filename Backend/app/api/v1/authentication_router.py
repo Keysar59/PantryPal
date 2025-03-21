@@ -16,7 +16,7 @@ def signup(user_data: User, response: Response,
     user, _ = authentication_service.signup_user(user_data)
 
     token = authentication_service.create_token(user.email)
-
+    
     setcookie(response, token)
 
     return {"message": "User created successfully", "user": "testuser"}
@@ -40,12 +40,13 @@ def login(user_data: User, response: Response,
     return {"message": "Login successful", "user": user_data.email}
     
 def setcookie(response, token):
+    print("login token: ", token)
     response.set_cookie(
         key="session_token",
         value=token,
         httponly=True,
         max_age=int(timedelta(weeks=20).total_seconds()),
-        samesite="Lax",
+        samesite="None",
         secure=True,
     )
 

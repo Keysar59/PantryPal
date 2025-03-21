@@ -13,8 +13,9 @@ load_dotenv()
 class UserRepositorySQL(UserRepositoryInterface):
     def __init__(self):
         self.db_url = os.getenv("DATABASE_URL")
-        self._delete_table()
+        # self._delete_table()
         self._create_table()
+        print("data:", self.get_data())
 
     def _get_connection(self):
         """Creates a new database connection."""
@@ -87,5 +88,4 @@ class UserRepositorySQL(UserRepositoryInterface):
             with conn.cursor() as cursor:
                 cursor.execute(query)
                 data = cursor.fetchall()
-                print("data = ", data)
                 return data

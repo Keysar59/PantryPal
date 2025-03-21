@@ -45,6 +45,7 @@ export default function Login() {
     setError(''); // Clear errors before sending request
   
     try {
+      console.log("sending login")
       const response = await fetch(`${SERVER_URL}auth/login`, {
         method: 'POST',
         headers: {
@@ -53,6 +54,7 @@ export default function Login() {
         body: JSON.stringify({ email, password }),
         credentials: 'include',
       });
+      console.log("sent")
   
       const data = await response.json();
   
