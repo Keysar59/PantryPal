@@ -1,4 +1,4 @@
-import { TextInput, View, StyleSheet, FlatList, Text } from "react-native";
+import { TextInput, View, StyleSheet, FlatList, Text, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 
@@ -9,18 +9,30 @@ export default function SearchBar() {
   const handleSearch = (text) => {
     setQuery(text);
     // Example suggestions, replace with your data source
-    const exampleSuggestions = ["Apple", "ABanana", "ACherry", "Date", "Fig", "Grape"];
+    const exampleSuggestions = [
+      { name: "Apple", barcode: "123456", quantity: 10, image_url: "https://www.officedepot.co.il/media/amasty/shopby/option_images/app-removebg-preview.png" },
+      { name: "ABanana", barcode: "234567", quantity: 5, image_url: "https://static.wikia.nocookie.net/surrealmemes/images/b/b5/Ba.png/revision/latest?cb=20200325160337" },
+      { name: "ACherry", barcode: "345678", quantity: 20, image_url: "https://i.imgflip.com/1sz5j9.jpg?a483672" },
+      { name: "ADate", barcode: "456789", quantity: 15, image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_JSDLrbat3blYyZ22rfZoxVSM-r7rWL2EGw&s" },
+      { name: "AFig", barcode: "567890", quantity: 8, image_url: "https://i.ytimg.com/vi/F2coGXkY0Mk/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLD40OTzMswLb9q7Ru4Op9vKAT6lFQ" },
+      { name: "AGrape", barcode: "678901", quantity: 12, image_url: "https://thefridaytimes.com/digital_images/large/2022-08-31/wow-grape-meme-to-be-auctioned-as-nft-1687413265-3746.png" },
+    ];
     // Only set suggestions if text is not empty
-    if (text.length > 2) {
-      setSuggestions(exampleSuggestions.filter(item => item.toLowerCase().startsWith(text.toLowerCase())));
+    if (text.length > 0) {
+      setSuggestions(exampleSuggestions.filter(item => item.name.toLowerCase().startsWith(text.toLowerCase())));
     } else {
       setSuggestions([]); // Clear suggestions if input is empty
     }
   };
 
   const handleSelectSuggestion = (suggestion) => {
-    setQuery(suggestion); // Set the input to the selected suggestion
+    setQuery(suggestion);
     setSuggestions([]); // Clear suggestions after selection
+  };
+
+  const handleClear = () => {
+    setQuery(""); // Clear the input
+    setSuggestions([]); // Clear suggestions
   };
 
   return (
@@ -33,19 +45,34 @@ export default function SearchBar() {
         value={query}
         onChangeText={handleSearch}
       />
+      {query.length > 0 && ( // Show clear button only if there is text
+        <TouchableOpacity onPress={handleClear}>
+          <Ionicons name="close-circle" size={20} color="#8E8E93" />
+        </TouchableOpacity>
+      )}
       {suggestions.length > 0 && (
-        <View style={styles.suggestionsContainer}>
+        <View style={[styles.suggestionsContainer, { maxHeight: 270 }]}>
           <FlatList
             data={suggestions}
-            keyExtractor={(item) => item}
+            keyExtractor={(item) => item.name}
             renderItem={({ item }) => (
-              <Text 
-                style={styles.suggestion} 
-                onPress={() => handleSelectSuggestion(item)} // Handle suggestion selection
-              >
-                {item}
-              </Text>
+              <TouchableOpacity style={styles.suggestionItem} onPress={() => handleSelectSuggestion(item.name)}>
+                <View style={{ flex: 1, marginLeft: 8 }}>
+                  <Text style={styles.suggestionText}>
+                    {item.name}
+                  </Text>
+                  <Text style={styles.barcodeText}>
+                    Barcode: {item.barcode}
+                  </Text>
+                  {item.image_url ? (
+                    <Image source={{ uri: item.image_url }} style={styles.suggestionImage} />
+                  ) : null}
+                </View>
+              </TouchableOpacity>
             )}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={true}
+            scrollEnabled={suggestions.length > 3}
           />
         </View>
       )}
@@ -82,15 +109,26 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     elevation: 3,
     zIndex: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
-  suggestion: {
-    padding: 12,
-    backgroundColor: '#fff',
+  suggestionItem: {
+    paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    borderRadius: 8, // Rounded corners for suggestions
   },
-  suggestionHovered: {
-    backgroundColor: '#f0f0f0', // Light background on hover
+  suggestionText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  barcodeText: {
+    fontSize: 14,
+    color: "#888",
+  },
+  suggestionImage: {
+    width: 60,
+    height: 60,
+    marginLeft: 8,
   },
 });
