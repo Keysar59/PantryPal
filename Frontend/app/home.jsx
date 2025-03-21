@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Pressable, SafeAreaView, useColorScheme } from "react-native";
+import { Text, View, StyleSheet, Pressable, SafeAreaView, useColorScheme, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 // Define theme colors
@@ -20,9 +20,32 @@ export default function Home() {
       params: { id: groupId, name: groupName }
     });
   };
+
+  const handleLogout = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to log out?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "OK",
+          onPress: () => router.push("/login")
+        }
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.title, { color: theme.text }]}>My Groups</Text>
+      <View style={styles.header}>
+        <Text style={[styles.title, { color: theme.text }]}>My Groups</Text>
+        <Pressable style={[styles.logoutButton, { backgroundColor: theme.card }]} onPress={handleLogout}>
+          <Ionicons name="log-out-outline" size={24} color="red" />
+        </Pressable>
+      </View>
       
       <View style={styles.groupsContainer}>
         {mockGroups.map((group) => (
@@ -36,7 +59,7 @@ export default function Home() {
             </View>
             <View style={styles.groupInfo}>
               <Text style={[styles.groupName, { color: theme.text }]}>{group.name}</Text>
-              <Text style={styles.groupItemCount}>{group.itemCount} items</Text>
+              <Text style={styles.groupItemCount}>Group id: {group.id}</Text>
             </View>
             <Ionicons name="chevron-forward" size={24} color={theme.secondaryText} />
           </Pressable>
@@ -67,11 +90,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F2F2F7',
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+  },
+  logoutButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   title: {
     fontSize: 34,
     fontWeight: 'bold',
-    padding: 16,
-    paddingBottom: 8,
     color: '#000',
   },
   groupsContainer: {
