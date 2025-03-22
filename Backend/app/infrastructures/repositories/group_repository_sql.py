@@ -38,9 +38,9 @@ class GroupRepositorySQL(GroupRepositoryInterface):
                     id INT PRIMARY KEY,
                     name VARCHAR(255) NOT NULL,
                     creator VARCHAR(255) NOT NULL,
-                    pantry_list_id INT NOT NULL,
-                    default_list_id INT NOT NULL,
-                    shopping_list_id INT NOT NULL
+                    pantry_list_id VARCHAR(9) NOT NULL,
+                    default_list_id VARCHAR(9) NOT NULL,
+                    shopping_list_id VARCHAR(9) NOT NULL
                 )
             '''
             ,
@@ -92,10 +92,10 @@ class GroupRepositorySQL(GroupRepositoryInterface):
             if not results:  # Makes sure id is not in use.
                 id_found = True
 
-        # TODO: Create new lists
-        pantry_list_id = 1
-        default_list_id = 1
-        shopping_list_id = 1
+        id_in_string = str(unique_id)
+        pantry_list_id = id_in_string + '1'
+        default_list_id = id_in_string + '2'
+        shopping_list_id = id_in_string + '3'
         query = '''
         INSERT INTO groups (id, name, creator, pantry_list_id, default_list_id, shopping_list_id) 
         VALUES (%s, %s, %s, %s, %s, %s) RETURNING id
