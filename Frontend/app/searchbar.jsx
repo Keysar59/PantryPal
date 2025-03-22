@@ -1,14 +1,17 @@
-import { TextInput, View, StyleSheet, FlatList, Text, Image, TouchableOpacity } from "react-native";
+import { TextInput, View, StyleSheet, FlatList, Text, Image, TouchableOpacity, Pressable, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
+import { useColorScheme } from 'react-native';
+import { Colors } from "../constants/Colors";
 
 export default function SearchBar() {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme || 'light'];
 
   const handleSearch = (text) => {
     setQuery(text);
-    // Example suggestions, replace with your data source
     const exampleSuggestions = [
       { name: "Apple", barcode: "123456", quantity: 10, image_url: "https://www.officedepot.co.il/media/amasty/shopby/option_images/app-removebg-preview.png" },
       { name: "ABanana", barcode: "234567", quantity: 5, image_url: "https://static.wikia.nocookie.net/surrealmemes/images/b/b5/Ba.png/revision/latest?cb=20200325160337" },
@@ -17,66 +20,80 @@ export default function SearchBar() {
       { name: "AFig", barcode: "567890", quantity: 8, image_url: "https://i.ytimg.com/vi/F2coGXkY0Mk/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLD40OTzMswLb9q7Ru4Op9vKAT6lFQ" },
       { name: "AGrape", barcode: "678901", quantity: 12, image_url: "https://thefridaytimes.com/digital_images/large/2022-08-31/wow-grape-meme-to-be-auctioned-as-nft-1687413265-3746.png" },
     ];
-    // Only set suggestions if text is not empty
     if (text.length > 0) {
       setSuggestions(exampleSuggestions.filter(item => item.name.toLowerCase().startsWith(text.toLowerCase())));
     } else {
-      setSuggestions([]); // Clear suggestions if input is empty
+      setSuggestions([]);
     }
   };
 
   const handleSelectSuggestion = (suggestion) => {
     setQuery(suggestion);
-    setSuggestions([]); // Clear suggestions after selection
+    setSuggestions([]);
   };
 
   const handleClear = () => {
-    setQuery(""); // Clear the input
-    setSuggestions([]); // Clear suggestions
+    setQuery("");
+    setSuggestions([]);
   };
 
   return (
-    <View style={styles.searchContainer}>
-      <Ionicons name="search" size={20} color="#8E8E93" />
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search..."
-        placeholderTextColor="#8E8E93"
-        value={query}
-        onChangeText={handleSearch}
-      />
-      {query.length > 0 && ( // Show clear button only if there is text
-        <TouchableOpacity onPress={handleClear}>
-          <Ionicons name="close-circle" size={20} color="#8E8E93" />
-        </TouchableOpacity>
-      )}
-      {suggestions.length > 0 && (
-        <View style={[styles.suggestionsContainer, { maxHeight: 270 }]}>
-          <FlatList
-            data={suggestions}
-            keyExtractor={(item) => item.name}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.suggestionItem} onPress={() => handleSelectSuggestion(item.name)}>
-                <View style={{ flex: 1, marginLeft: 8 }}>
-                  <Text style={styles.suggestionText}>
-                    {item.name}
-                  </Text>
-                  <Text style={styles.barcodeText}>
-                    Barcode: {item.barcode}
-                  </Text>
-                  {item.image_url ? (
-                    <Image source={{ uri: item.image_url }} style={styles.suggestionImage} />
-                  ) : null}
-                </View>
-              </TouchableOpacity>
-            )}
-            showsVerticalScrollIndicator={false}
-            nestedScrollEnabled={true}
-            scrollEnabled={suggestions.length > 3}
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={styles.header}>
+        <Pressable style={styles.backButton} onPress={() => {/* Add back navigation logic */}}>
+          <Ionicons name="chevron-back" size={28} color="#007AFF" />
+        </Pressable>
+        <Text style={[styles.title, { color: theme.text }]}>Search</Text>
+      </View>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+      <View style={{ position: "relative" }}> 
+        <View style={[styles.searchContainer, { backgroundColor: theme.card }]}>
+          <Ionicons name="search" size={20} color={theme.text} />
+          <TextInput
+            style={[styles.searchInput, { color: theme.text, borderColor: theme.border }]}
+            placeholder="Search..."
+            placeholderTextColor={theme.secondaryText}
+            value={query}
+            onChangeText={handleSearch}
+            onSubmitEditing={() => console.log(query)} 
           />
+          {query.length > 0 && (
+            <TouchableOpacity onPress={handleClear}>
+              <Ionicons name="close-circle" size={20} color={theme.text} />
+            </TouchableOpacity>
+          )}
         </View>
-      )}
-    </View>
+
+        {suggestions.length > 0 && (
+          <View style={[styles.suggestionsContainer, { backgroundColor: theme.card }]}>
+            <FlatList
+              data={suggestions}
+              keyExtractor={(item) => item.name}
+              renderItem={({ item }) => (
+                <TouchableOpacity style={styles.suggestionItem} onPress={() => handleSelectSuggestion(item.name)}>
+                  <View style={styles.suggestionContent}>
+                    {item.image_url ? (
+                      <Image source={{ uri: item.image_url }} style={styles.suggestionImage} />
+                    ) : null}
+                    <View style={{ flex: 1 }}>
+                      <Text style={[styles.suggestionText, { color: theme.text }]}>{item.name}</Text>
+                      <Text style={[styles.barcodeText, { color: theme.secondaryText }]}>Barcode: {item.barcode}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              )}
+              showsVerticalScrollIndicator={false}
+              nestedScrollEnabled={true}
+              scrollEnabled={suggestions.length > 3}
+            />
+          </View>
+        )}
+      </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -86,49 +103,77 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 16,
     marginBottom: 16,
-    padding: 12,
-    borderRadius: 12,
+    padding: 14,
+    borderRadius: 25,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   searchInput: {
     flex: 1,
-    marginLeft: 8,
+    marginLeft: 10,
     fontSize: 16,
-    padding: 0,
+    paddingVertical: 2,
   },
   suggestionsContainer: {
     position: 'absolute',
-    top: 50,
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    elevation: 3,
+    top: 60,
+    left: 16,
+    right: 16,
+    borderRadius: 15,
     zIndex: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 8,
+    maxHeight: 270,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
   },
   suggestionItem: {
-    paddingVertical: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: '#eee',
+    borderRadius: 10,
+  },
+  suggestionContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
   suggestionText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
   },
   barcodeText: {
     fontSize: 14,
-    color: "#888",
   },
   suggestionImage: {
-    width: 60,
-    height: 60,
-    marginLeft: 8,
+    width: 80,
+    height: 80,
+    borderRadius: 8,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    marginBottom: 16,
+  },
+  backButton: {
+    padding: 8,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    padding: 16,
+  },
+  title: {
+    fontSize: 34,
+    fontWeight: 'bold',
+    marginLeft: 8,
+    flex: 1,
+  }
 });
