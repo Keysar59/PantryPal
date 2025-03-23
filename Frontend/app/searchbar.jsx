@@ -3,8 +3,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { useColorScheme } from 'react-native';
 import { Colors } from "../constants/Colors";
+import { useRouter,useLocalSearchParams } from 'expo-router';
 
 export default function SearchBar() {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const colorScheme = useColorScheme();
@@ -36,6 +38,52 @@ export default function SearchBar() {
     setQuery("");
     setSuggestions([]);
   };
+
+  const handleAddProduct = async () => {
+    // if (!productName && !quantity) {
+    //   setError('Name and quantity cannot be empty.');
+    //   return; 
+    // }
+    // if (!productName) {
+    //   setError('Name cannot be empty.');
+    //   return; 
+    // }
+    // if (!quantity) {
+    //   setError('Quantity cannot be empty.');
+    //   return; 
+    // }
+
+    // // Check for commas in inputs
+    // const commaRegex = /,/; // Regular expression to check for commas
+    // if (commaRegex.test(productName)) {
+    //   setError('Product name cannot contain a comma.');
+    //   return;
+    // }
+    // if (commaRegex.test(quantity)) {
+    //   setError('Quantity cannot contain a comma.');
+    //   return;
+    // }
+    // setError(''); // Clear error if inputs are valid
+
+    // Alert.alert(
+    //   "Adding Product",
+    //   `Product: ${productName}, Quantity: ${quantity}`,
+    //   [
+    //     {
+    //       text: "Cancel",
+    //       style: "cancel",
+    //     },
+    //     {
+    //       text: "Add Product",
+    //       onPress: ()=> sendToServer(productName, quantity)
+    //     }
+    //   ]
+    // );
+    sendToServer()
+  };
+    const sendToServer = () => {
+      console.log("Adding..." ); 
+    };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
@@ -92,6 +140,19 @@ export default function SearchBar() {
           </View>
         )}
       </View>
+      <View style={[styles.card, { backgroundColor: theme.card, marginTop: suggestions.length > 0 ? 270 : 0 }]}>
+          <Pressable style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleAddProduct}>
+            <Ionicons name="add-outline" size={20} color="white" />
+            <Text style={styles.buttonText}>Add Product to the Pantry</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.button, styles.successButton]}
+            onPress={() => router.push(`/scanner?from=${encodeURIComponent("add_product_pantry")}`)}
+            >
+            <Ionicons name="barcode" size={20} color="white" />
+            <Text style={styles.buttonText}>Scan Barcode</Text>
+          </Pressable>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -155,6 +216,23 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 8,
+  },
+  button: {
+    flexDirection: 'row',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  successButton: {
+    backgroundColor: '#34C759', 
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
   },
   header: {
     flexDirection: 'row',
