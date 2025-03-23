@@ -16,7 +16,7 @@ _testing_service = TestingService(_user_repository)
 _group_management_service = GroupManagementService(_group_repository)
 _list_management_service = ListManagementService(_list_repository)
 _authentication_service = AuthenticationService(_user_repository)
-# _products_fetching_service = ProductsFetchingService(_user_repository)
+_products_fetching_service = ProductsFetchingService(_user_repository)
 
 def get_authentication_service() -> AuthenticationService:
     return _authentication_service
@@ -30,5 +30,5 @@ def get_list_management_service() -> ListManagementService:
 def get_testing_service() -> TestingService:
     return _testing_service
 
-# def get_products_fetching_service() -> ProductsFetchingService:
-#     return _products_fetching_service
+def get_products_fetching_service() -> ProductsFetchingService:
+    return _products_fetching_service
