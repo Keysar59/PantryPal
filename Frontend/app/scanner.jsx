@@ -36,8 +36,12 @@ export default function Scanner() {
         {
           text: "Add Product",
           
-          onPress: () => {setScanned(false), router.push(`/${"addProduct"}?product_id=${encodeURIComponent(data)}`)}
+          onPress: async () => {
+            setScanned(false);
+            const product = await communication.getProductByBarcode(data);
+            router.push(`/${"addProduct"}?product_id=${encodeURIComponent(product.product_id)}&product_name=${encodeURIComponent(product.product_name)}&product_image_url=${encodeURIComponent(product.product_image_url)}`);
         }
+      }
       ]
     );
   };

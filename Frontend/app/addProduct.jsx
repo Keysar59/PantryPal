@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useColorScheme } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors } from "../constants/Colors";
+const communication = require('../src/services/communication');
 
 export default function AddProduct() {
   const router = useRouter();
@@ -23,8 +24,11 @@ export default function AddProduct() {
     }
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     // Add product logic here
+    product = {"product_id" : params.product_id, "product_name" : params.product_name, "product_image_url" : params.product_image_url}
+    //listId?
+    await communication.addProductToList(listId, quantity, product)
     console.log("Adding %s",params.product_name);
     router.push("group");
   };
