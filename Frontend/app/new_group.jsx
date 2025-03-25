@@ -3,6 +3,8 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import axios from 'axios';
+
 
 export default function NewGroup() {
   const router = useRouter();
@@ -46,15 +48,18 @@ export default function NewGroup() {
     }
 
     setAwaiting(true);
-    const response = await fetch(url + '/group/create_group', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ groupName }), 
-    });
-    console.log(response);
-    setAwaiting(false);
+    try {
+      const response = await axios.post(url + '/group/create_group', { groupName }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log(response);
+    } catch (error) {
+      console.error('Error creating group:', error);
+    } finally {
+      setAwaiting(false);
+    }
   };
 
   return (

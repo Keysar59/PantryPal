@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
  import { Ionicons } from "@expo/vector-icons";
  import { useLocalSearchParams, useRouter } from "expo-router";
  const [awaiting, setAwaiting] = useState(false);
+ import axios from 'axios';
  // Define theme colors (same as in index.jsx)
  const Colors = {
    light: {
@@ -132,16 +133,19 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
               "Deleting group"
             );
             console.log("Deleting group with Id:", groupId);
-
-            const response = await fetch(url + '/group/delete_group', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ groupId }), 
-            });
-            console.log(response);
-            setAwaiting(false);
+            
+            try {
+              const response = await axios.post(url + '/group/delete_group', { groupId }, {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              });
+              console.log(response);
+            } catch (error) {
+              console.error('Error deleting group:', error);
+            } finally {
+              setAwaiting(false);
+            }
             return;
           }
         }

@@ -3,6 +3,8 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import axios from 'axios';
+
 
 export default function JoinGroup() {
   const router = useRouter();
@@ -39,15 +41,18 @@ export default function JoinGroup() {
     }
 
     setAwaiting(true);
-    const response = await fetch(url + '/group/join_group', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ groupId }), 
-    });
-    console.log(response);
-    setAwaiting(false);
+    try {
+      const response = await axios.post(url + '/group/join_group', { groupId }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log(response);
+    } catch (error) {
+      console.error('Error joining group:', error);
+    } finally {
+      setAwaiting(false);
+    }
   };
 
   return (

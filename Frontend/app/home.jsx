@@ -2,6 +2,7 @@ import { Text, View, StyleSheet, Pressable, SafeAreaView, useColorScheme, Alert 
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 // Define theme colors
 import { Colors } from "../constants/Colors" ;
 
@@ -14,15 +15,17 @@ export default function Home() {
   
   useEffect(() => {
     const getGroups = async () => {
-      const response = await fetch(url + '/group/get_groups_by_email', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      console.log("Response to group fetching:", data.message);
-      setGroups(data.groups);
+      try {
+        const response = await axios.get(url + '/group/get_groups', {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        console.log("Response to group fetching:", response.data.message);
+        setGroups(response.data.groups);
+      } catch (error) {
+        console.error('Error fetching groups:', error);
+      }
     };
 
     getGroups();
