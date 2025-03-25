@@ -44,10 +44,10 @@ def setcookie(response, token):
     response.set_cookie(
         key="session_token",
         value=token,
-        httponly=True,
+        httponly=False,
         max_age=int(timedelta(weeks=20).total_seconds()),
-        samesite="None",
-        secure=True,
+        samesite="lax",
+        secure=False,
     )
 
 @router.get("/status")
