@@ -1,4 +1,4 @@
-import { TextInput, View, StyleSheet, FlatList, Text, Image, TouchableOpacity, Pressable, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
+import { TextInput, View, StyleSheet, FlatList, Text, Image, TouchableOpacity, Pressable, SafeAreaView, KeyboardAvoidingView, Platform, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { useColorScheme } from 'react-native';
@@ -8,38 +8,31 @@ const communication = require('../src/services/communication');
 
 export default function SearchBar() {
   const router = useRouter();
+  const params = useLocalSearchParams(); // We are supposed to get a group_id
+
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme || 'light'];
 
   const handleSearch = async (text) => {
     setQuery(text);
-    /*
-    const exampleSuggestions = [
-    { product_name: "Apple", product_id: "123456", quantity: 10, product_image_url: "https://www.officedepot.co.il/media/amasty/shopby/option_images/app-removebg-preview.png" },
-    { product_name: "Banana", product_id: "234567", quantity: 5, product_image_url: "https://static.wikia.nocookie.net/surrealmemes/images/b/b5/Ba.png/revision/latest?cb=20200325160337" },
-    { product_name: "Cherry", product_id: "345678", quantity: 20, product_image_url: "https://i.imgflip.com/1sz5j9.jpg?a483672" },
-    { product_name: "Date", product_id: "456789", quantity: 15, product_image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_JSDLrbat3blYyZ22rfZoxVSM-r7rWL2EGw&s" },
-    { product_name: "Fig", product_id: "567890", quantity: 8, product_image_url: "https://i.ytimg.com/vi/F2coGXkY0Mk/hq720.jpg" },
-    { product_name: "Grape", product_id: "678901", quantity: 12, product_image_url: "https://thefridaytimes.com/digital_images/large/2022-08-31/wow-grape-meme-to-be-auctioned-as-nft-1687413265-3746.png" },
-    // Add more products to test pagination
-    { product_name: "Kiwi", product_id: "789012", quantity: 7, product_image_url: "https://images3.memedroid.com/images/UPLOADED350/5d2697f698b57.jpeg" },
-    { product_name: "Lemon", product_id: "890123", quantity: 9, product_image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVPo64847GgwPlBLqx3z6xOGHgwx8aq1cK5g&s" },
-    { product_name: "Mango", product_id: "901234", quantity: 11, product_image_url: "https://media.craiyon.com/2023-09-09/9b441cc182bd45fda8dba904d7bcc4e5.webp" },
-    { product_name: "Orange", product_id: "012345", quantity: 14, product_image_url: "https://i.ytimg.com/vi/ZN5PoW7_kdA/hqdefault.jpg" },
-    { product_name: "Kiwi2", product_id: "789012", quantity: 7, product_image_url: "https://images3.memedroid.com/images/UPLOADED350/5d2697f698b57.jpeg" },
-    { product_name: "Lemon2", product_id: "890123", quantity: 9, product_image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVPo64847GgwPlBLqx3z6xOGHgwx8aq1cK5g&s" },
-    { product_name: "Mango2", product_id: "901234", quantity: 11, product_image_url: "https://media.craiyon.com/2023-09-09/9b441cc182bd45fda8dba904d7bcc4e5.webp" },
-    { product_name: "Orange2", product_id: "012345", quantity: 14, product_image_url: "https://i.ytimg.com/vi/ZN5PoW7_kdA/hqdefault.jpg" },
-  
-    ];*/
     if (text.length > 2) {
-      const suggestions = await communication.getProductsOptionsByName(text)
-      setSuggestions(suggestions);
+      setIsLoading(true);
+      try {
+        const suggestions = await communication.getProductsOptionsByName(text);
+        setSuggestions(suggestions);
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+      } finally {
+        setIsLoading(false);
+      }
     } else {
       setSuggestions([]);
     }
+    
+    
   };
 
   const handleSelectSuggestion = (suggestion) => {
@@ -63,7 +56,7 @@ export default function SearchBar() {
     const chooseProduct = () => {
       
       console.log("Adding...", query ); 
-      router.push(`/${"chooseProduct"}?query=${encodeURIComponent(query)}`);
+      router.push(`/${"chooseProduct"}?query=${encodeURIComponent(query)}&group_id=${encodeURIComponent(params.group_id)}`);
     };
 
   return (
@@ -89,10 +82,13 @@ export default function SearchBar() {
             onChangeText={handleSearch}
             onSubmitEditing={() => handleAddProduct(query)} 
           />
-          {query.length > 0 && (
+          {query.length > 0 && !isLoading && (
             <TouchableOpacity onPress={handleClear}>
               <Ionicons name="close-circle" size={20} color={theme.text} />
             </TouchableOpacity>
+          )}
+          {isLoading && (
+            <ActivityIndicator size="small" color={theme.primary} />
           )}
         </View>
 
@@ -102,7 +98,7 @@ export default function SearchBar() {
               data={suggestions}
               keyExtractor={(item) => item.product_name}
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.suggestionItem} onPress={() => router.push(`/addProduct?product_name=${encodeURIComponent(item.product_name)}&product_id=${encodeURIComponent(item.product_id)}&product_image_url=${encodeURIComponent(item.product_image_url)}`)}>
+                <TouchableOpacity style={styles.suggestionItem} onPress={() => router.push(`/addProduct?product_name=${encodeURIComponent(item.product_name)}&product_id=${encodeURIComponent(item.product_id)}&product_image_url=${encodeURIComponent(item.product_image_url)}&group_id=${encodeURIComponent(params.group_id)}`)}>
                   <View style={styles.suggestionContent}>
                     {item.product_image_url ? (
                       <Image source={{ uri: item.product_image_url }} style={styles.suggestionImage} />
@@ -128,7 +124,7 @@ export default function SearchBar() {
           </Pressable>
           <Pressable
             style={[styles.button, styles.successButton]}
-            onPress={() => router.push(`/scanner?from=${encodeURIComponent("add_product_pantry")}`)}
+            onPress={() => router.push(`/scanner?from=${encodeURIComponent(params.group_id)}`)}
             >
             <Ionicons name="barcode" size={20} color="white" />
             <Text style={styles.buttonText}>Scan Barcode</Text>

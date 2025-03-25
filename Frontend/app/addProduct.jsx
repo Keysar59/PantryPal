@@ -7,7 +7,7 @@ import { Colors } from "../constants/Colors";
 
 export default function AddProduct() {
   const router = useRouter();
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams(); //group_id is under params.group_id
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme || 'light'];
   const [quantity, setQuantity] = useState(1);
