@@ -48,19 +48,49 @@ export default function Login() {
       console.log("still awaiting response");
       return;
     }
+    
+    setAwaiting(true);
+
     try {
-      const response = await axios.post(url + '/auth/login', { email, password }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axios.post(url + '/auth/login', 
+        { email, password }, 
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          withCredentials: true, // Enable sending and receiving cookies
+        }
+      );
+
+      // Extract and save cookies
+      const cookies = response.headers['set-cookie'];
+      if (cookies) {
+        // Save cookies to AsyncStorage
+        await AsyncStorage.setItem('auth_cookies', JSON.stringify(cookies));
+        console.log('Cookies saved successfully');
+      }
+
       console.log("Response to group fetching:", response.data.message);
       router.push('/home'); // Navigate to home if inputs are valid
     } catch (error) {
-      console.error('Error fetching groups:', error);
-    }finally{
+      console.error('Error during login:', error);
+      
+      // Handle specific error scenarios
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        setError(error.response.data.message || 'Login failed. Please try again.');
+      } else if (error.request) {
+        // The request was made but no response was received
+        setError('No response from server. Please check your connection.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setError('An unexpected error occurred. Please try again.');
+      }
+    } finally {
       setAwaiting(false);
     }
+
     setError(''); // Clear error if inputs are valid
   };
 
