@@ -3,17 +3,20 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Colors } from "../constants/Colors" ;
 import React, { useState } from 'react';
+import axios from 'axios';
 
 export default function Login() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
+  const url = "https://pantry-pal-git-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1";
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [awaiting, setAwaiting] = useState(false);
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     if (!email && !password) {
       setError('Email and password cannot be empty.');
       return; 
@@ -37,8 +40,28 @@ export default function Login() {
       setError('Password cannot contain a comma.');
       return;
     }
+    if (awaiting){
+      Alert.alert(
+        "Please wait before pressing again",
+        `Still awaiting response.`
+      );
+      console.log("still awaiting response");
+      return;
+    }
+    try {
+      const response = await axios.post(url + '/auth/login', { email, password }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log("Response to group fetching:", response.data.message);
+      router.push('/home'); // Navigate to home if inputs are valid
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+    }finally{
+      setAwaiting(false);
+    }
     setError(''); // Clear error if inputs are valid
-    router.push('/home'); // Navigate to home if inputs are valid
   };
 
   return (

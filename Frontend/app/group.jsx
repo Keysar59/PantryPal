@@ -32,6 +32,7 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
    const [activeTab, setActiveTab] = useState("shopping"); // "shopping" or "pantry"
    const [shoppingSearch, setShoppingSearch] = useState("");
    const [pantrySearch, setPantrySearch] = useState("");
+   const url = "https://pantry-pal-git-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1";
    const [shoppingList, setShoppingList] = useState([
      { id: 1, name: "eggs", quantity: 2 },
      { id: 2, name: "bread", quantity: 1 },

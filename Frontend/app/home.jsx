@@ -11,7 +11,7 @@ export default function Home() {
   const theme = Colors[colorScheme ?? 'light'];
   const router = useRouter();
   const [groups, setGroups] = useState([]);
-  const url = "idfk"; //////////////////////////////////FIND AN ACTUAL URL
+  const url = "https://pantry-pal-git-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1";
   
   useEffect(() => {
     const getGroups = async () => {
