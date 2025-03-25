@@ -19,7 +19,7 @@ def signup(user_data: User, response: Response,
     
     setcookie(response, token)
 
-    return {"message": "User created successfully", "user": "testuser"}
+    return {"message": "User created successfully", "user": user.email}
 
 @router.post("/login")
 def login(user_data: User, response: Response, 

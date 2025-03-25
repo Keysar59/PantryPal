@@ -1,19 +1,27 @@
 from fastapi import APIRouter, Response, HTTPException, status, Depends
 from app.services.group_management_service import GroupManagementService
+from app.services.authentication_service import AuthenticationService
 from app.domain.entities.group import Group
 from fastapi import Request
 from app.infrastructures.dependency_injection import get_group_management_service
+from app.infrastructures.dependency_injection import get_authentication_service
 
 router = APIRouter()
 
 @router.post("/create_group")
-def create_group(group_name: str, user_email: str, 
-                 group_service: GroupManagementService = Depends(get_group_management_service)):
+def create_group(request: Request,
+                 group_name: str,
+                 group_service: GroupManagementService = Depends(get_group_management_service),
+                 authentication_service: AuthenticationService = Depends(get_authentication_service)):
     """
     Creates a group and adds the user to it as an admin.
     :param group_name: The name of new the group.
     :param user_email: The email of the user creating the group.
     """
+
+    token = request.cookies.get("session_token")
+    user_email = authentication_service.verify_token(token)  # Verify token
+
     group_id = group_service.create_group(group_name, user_email)
 
     if group_id == -1:
@@ -36,13 +44,19 @@ def delete_group(group_id: int,
     return {"message": "Group deleted successfully"}
 
 @router.post("/join_group")
-def join_group(group_id: int, user_email: str,
-               group_service: GroupManagementService = Depends(get_group_management_service)):
+def join_group(request: Request,
+               group_id: int,
+               group_service: GroupManagementService = Depends(get_group_management_service),
+               authentication_service: AuthenticationService = Depends(get_authentication_service)):
     """
     Adds user to a group.
     :param group_id: The id of the group.
     :param user_email: The email of the user to add to the group.
     """
+
+    token = request.cookies.get("session_token")
+    user_email = authentication_service.verify_token(token)  # Verify token
+
     success = group_service.join_group(group_id, user_email)
 
     if not success:
@@ -51,13 +65,19 @@ def join_group(group_id: int, user_email: str,
     return {"message": "User joined group successfully"}
 
 @router.post("/leave_group")
-def leave_group(group_id: int, user_email: str,
-                group_service: GroupManagementService = Depends(get_group_management_service)):
+def leave_group(request: Request,
+                group_id: int,
+                group_service: GroupManagementService = Depends(get_group_management_service),
+                authentication_service: AuthenticationService = Depends(get_authentication_service)):
     """
     Removes user from a group.
     :param group_id: The id of the group.
     :param user_email: The email of the user to remove from the group.
     """
+
+    token = request.cookies.get("session_token")
+    user_email = authentication_service.verify_token(token)  # Verify token
+
     success = group_service.leave_group(group_id, user_email)
 
     if not success:
@@ -96,13 +116,18 @@ def demote_user(group_id: int, user_email: str,
 
     return {"message": "Admin demoted to user successfully"}
 
-@router.get("/get_groups_by_user_email")
-def get_groups_by_user_email(user_email: str,
-                             group_service: GroupManagementService = Depends(get_group_management_service)):
+@router.get("/get_groups")
+def get_groups(request: Request,
+               group_service: GroupManagementService = Depends(get_group_management_service),
+               authentication_service: AuthenticationService = Depends(get_authentication_service)):
     """
     Gets the id and name of all the groups a user is in.
     :param user_email: The email of the user.
     """
+
+    token = request.cookies.get("session_token")
+    user_email = authentication_service.verify_token(token)  # Verify token
+
     groups = group_service.get_groups_by_user_email(user_email)
 
     if not groups:
@@ -112,7 +137,7 @@ def get_groups_by_user_email(user_email: str,
 
 @router.get("/get_group_name_by_id")
 def get_group_name_by_id(group_id: int,
-                        group_service: GroupManagementService = Depends(get_group_management_service)):
+                         group_service: GroupManagementService = Depends(get_group_management_service)):
     """
     Gets the name of a group by its id.
     :param group_id: The id of the group.
@@ -126,7 +151,7 @@ def get_group_name_by_id(group_id: int,
 
 @router.get("/get_list_ids_by_group_id")
 def get_list_ids_by_group_id(group_id: int,
-                            group_service: GroupManagementService = Depends(get_group_management_service)):
+                             group_service: GroupManagementService = Depends(get_group_management_service)):
     """
     Gets the ids of the lists in a group.
     :param group_id: The id of the group.

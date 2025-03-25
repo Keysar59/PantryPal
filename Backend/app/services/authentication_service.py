@@ -63,7 +63,10 @@ class AuthenticationService:
             if not user_email:
                 print("token invalid no user email")
                 InvalidTokenException()
-            return self.user_repository.user_exists(user_email)
+            
+            
+            if self.user_repository.user_exists(user_email): return user_email
+            else: return None
         
         except pyjwt.ExpiredSignatureError:
             raise ExpiredTokenException()
