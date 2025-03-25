@@ -15,15 +15,25 @@ export default function SearchBar() {
   const handleSearch = (text) => {
     setQuery(text);
     const exampleSuggestions = [
-      { name: "Apple", barcode: "123456", quantity: 10, image_url: "https://www.officedepot.co.il/media/amasty/shopby/option_images/app-removebg-preview.png" },
-      { name: "ABanana", barcode: "234567", quantity: 5, image_url: "https://static.wikia.nocookie.net/surrealmemes/images/b/b5/Ba.png/revision/latest?cb=20200325160337" },
-      { name: "ACherry", barcode: "345678", quantity: 20, image_url: "https://i.imgflip.com/1sz5j9.jpg?a483672" },
-      { name: "ADate", barcode: "456789", quantity: 15, image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_JSDLrbat3blYyZ22rfZoxVSM-r7rWL2EGw&s" },
-      { name: "AFig", barcode: "567890", quantity: 8, image_url: "https://i.ytimg.com/vi/F2coGXkY0Mk/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLD40OTzMswLb9q7Ru4Op9vKAT6lFQ" },
-      { name: "AGrape", barcode: "678901", quantity: 12, image_url: "https://thefridaytimes.com/digital_images/large/2022-08-31/wow-grape-meme-to-be-auctioned-as-nft-1687413265-3746.png" },
+      { product_name: "Apple", product_id: "123456", quantity: 10, product_image_url: "https://www.officedepot.co.il/media/amasty/shopby/option_images/app-removebg-preview.png" },
+    { product_name: "Banana", product_id: "234567", quantity: 5, product_image_url: "https://static.wikia.nocookie.net/surrealmemes/images/b/b5/Ba.png/revision/latest?cb=20200325160337" },
+    { product_name: "Cherry", product_id: "345678", quantity: 20, product_image_url: "https://i.imgflip.com/1sz5j9.jpg?a483672" },
+    { product_name: "Date", product_id: "456789", quantity: 15, product_image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_JSDLrbat3blYyZ22rfZoxVSM-r7rWL2EGw&s" },
+    { product_name: "Fig", product_id: "567890", quantity: 8, product_image_url: "https://i.ytimg.com/vi/F2coGXkY0Mk/hq720.jpg" },
+    { product_name: "Grape", product_id: "678901", quantity: 12, product_image_url: "https://thefridaytimes.com/digital_images/large/2022-08-31/wow-grape-meme-to-be-auctioned-as-nft-1687413265-3746.png" },
+    // Add more products to test pagination
+    { product_name: "Kiwi", product_id: "789012", quantity: 7, product_image_url: "https://images3.memedroid.com/images/UPLOADED350/5d2697f698b57.jpeg" },
+    { product_name: "Lemon", product_id: "890123", quantity: 9, product_image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVPo64847GgwPlBLqx3z6xOGHgwx8aq1cK5g&s" },
+    { product_name: "Mango", product_id: "901234", quantity: 11, product_image_url: "https://media.craiyon.com/2023-09-09/9b441cc182bd45fda8dba904d7bcc4e5.webp" },
+    { product_name: "Orange", product_id: "012345", quantity: 14, product_image_url: "https://i.ytimg.com/vi/ZN5PoW7_kdA/hqdefault.jpg" },
+    { product_name: "Kiwi", product_id: "789012", quantity: 7, product_image_url: "https://images3.memedroid.com/images/UPLOADED350/5d2697f698b57.jpeg" },
+    { product_name: "Lemon", product_id: "890123", quantity: 9, product_image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVPo64847GgwPlBLqx3z6xOGHgwx8aq1cK5g&s" },
+    { product_name: "Mango", product_id: "901234", quantity: 11, product_image_url: "https://media.craiyon.com/2023-09-09/9b441cc182bd45fda8dba904d7bcc4e5.webp" },
+    { product_name: "Orange", product_id: "012345", quantity: 14, product_image_url: "https://i.ytimg.com/vi/ZN5PoW7_kdA/hqdefault.jpg" },
+  
     ];
     if (text.length > 0) {
-      setSuggestions(exampleSuggestions.filter(item => item.name.toLowerCase().startsWith(text.toLowerCase())));
+      setSuggestions(exampleSuggestions.filter(item => item.product_name.toLowerCase().startsWith(text.toLowerCase())));
     } else {
       setSuggestions([]);
     }
@@ -40,49 +50,17 @@ export default function SearchBar() {
   };
 
   const handleAddProduct = async () => {
-    // if (!productName && !quantity) {
-    //   setError('Name and quantity cannot be empty.');
-    //   return; 
-    // }
-    // if (!productName) {
-    //   setError('Name cannot be empty.');
-    //   return; 
-    // }
-    // if (!quantity) {
-    //   setError('Quantity cannot be empty.');
-    //   return; 
-    // }
-
-    // // Check for commas in inputs
-    // const commaRegex = /,/; // Regular expression to check for commas
-    // if (commaRegex.test(productName)) {
-    //   setError('Product name cannot contain a comma.');
-    //   return;
-    // }
-    // if (commaRegex.test(quantity)) {
-    //   setError('Quantity cannot contain a comma.');
-    //   return;
-    // }
-    // setError(''); // Clear error if inputs are valid
-
-    // Alert.alert(
-    //   "Adding Product",
-    //   `Product: ${productName}, Quantity: ${quantity}`,
-    //   [
-    //     {
-    //       text: "Cancel",
-    //       style: "cancel",
-    //     },
-    //     {
-    //       text: "Add Product",
-    //       onPress: ()=> sendToServer(productName, quantity)
-    //     }
-    //   ]
-    // );
-    sendToServer()
+    if (!query) {
+      setError('Name and quantity cannot be empty.');
+      console.log("error");
+      return;
+    }
+    chooseProduct()
   };
-    const sendToServer = () => {
-      console.log("Adding..." ); 
+    const chooseProduct = () => {
+      
+      console.log("Adding...", query ); 
+      router.push(`/${"chooseProduct"}?product=${encodeURIComponent(query)}`);
     };
 
   return (
@@ -106,7 +84,7 @@ export default function SearchBar() {
             placeholderTextColor={theme.secondaryText}
             value={query}
             onChangeText={handleSearch}
-            onSubmitEditing={() => console.log(query)} 
+            onSubmitEditing={() => handleAddProduct(query)} 
           />
           {query.length > 0 && (
             <TouchableOpacity onPress={handleClear}>
@@ -119,16 +97,16 @@ export default function SearchBar() {
           <View style={[styles.suggestionsContainer, { backgroundColor: theme.card }]}>
             <FlatList
               data={suggestions}
-              keyExtractor={(item) => item.name}
+              keyExtractor={(item) => item.product_name}
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.suggestionItem} onPress={() => handleSelectSuggestion(item.name)}>
+                <TouchableOpacity style={styles.suggestionItem} onPress={() => router.push(`/addProduct?product_name=${encodeURIComponent(item.product_name)}&product_id=${encodeURIComponent(item.product_id)}&product_image_url=${encodeURIComponent(item.product_image_url)}`)}>
                   <View style={styles.suggestionContent}>
-                    {item.image_url ? (
-                      <Image source={{ uri: item.image_url }} style={styles.suggestionImage} />
+                    {item.product_image_url ? (
+                      <Image source={{ uri: item.product_image_url }} style={styles.suggestionImage} />
                     ) : null}
                     <View style={{ flex: 1 }}>
-                      <Text style={[styles.suggestionText, { color: theme.text }]}>{item.name}</Text>
-                      <Text style={[styles.barcodeText, { color: theme.secondaryText }]}>Barcode: {item.barcode}</Text>
+                      <Text style={[styles.suggestionText, { color: theme.text }]}>{item.product_name}</Text>
+                      <Text style={[styles.barcodeText, { color: theme.secondaryText }]}>Barcode: {item.product_id}</Text>
                     </View>
                   </View>
                 </TouchableOpacity>
