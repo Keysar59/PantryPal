@@ -28,10 +28,10 @@ export default function SearchBar() {
     { product_name: "Lemon", product_id: "890123", quantity: 9, product_image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVPo64847GgwPlBLqx3z6xOGHgwx8aq1cK5g&s" },
     { product_name: "Mango", product_id: "901234", quantity: 11, product_image_url: "https://media.craiyon.com/2023-09-09/9b441cc182bd45fda8dba904d7bcc4e5.webp" },
     { product_name: "Orange", product_id: "012345", quantity: 14, product_image_url: "https://i.ytimg.com/vi/ZN5PoW7_kdA/hqdefault.jpg" },
-    { product_name: "Kiwi", product_id: "789012", quantity: 7, product_image_url: "https://images3.memedroid.com/images/UPLOADED350/5d2697f698b57.jpeg" },
-    { product_name: "Lemon", product_id: "890123", quantity: 9, product_image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVPo64847GgwPlBLqx3z6xOGHgwx8aq1cK5g&s" },
-    { product_name: "Mango", product_id: "901234", quantity: 11, product_image_url: "https://media.craiyon.com/2023-09-09/9b441cc182bd45fda8dba904d7bcc4e5.webp" },
-    { product_name: "Orange", product_id: "012345", quantity: 14, product_image_url: "https://i.ytimg.com/vi/ZN5PoW7_kdA/hqdefault.jpg" },
+    { product_name: "Kiwi2", product_id: "789012", quantity: 7, product_image_url: "https://images3.memedroid.com/images/UPLOADED350/5d2697f698b57.jpeg" },
+    { product_name: "Lemon2", product_id: "890123", quantity: 9, product_image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVPo64847GgwPlBLqx3z6xOGHgwx8aq1cK5g&s" },
+    { product_name: "Mango2", product_id: "901234", quantity: 11, product_image_url: "https://media.craiyon.com/2023-09-09/9b441cc182bd45fda8dba904d7bcc4e5.webp" },
+    { product_name: "Orange2", product_id: "012345", quantity: 14, product_image_url: "https://i.ytimg.com/vi/ZN5PoW7_kdA/hqdefault.jpg" },
   
     ];*/
     if (text.length > 2) {

@@ -178,9 +178,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   secondaryButton: {
-    backgroundColor: 'white',
+    backgroundColor: '#FF3B30',
     borderWidth: 1,
-    borderColor: '#007AFF',
+    borderColor: '#FF3B30',
   },
   successButton: {
     backgroundColor: '#34C759',
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   secondaryButtonText: {
-    color: '#007AFF',
+    color: 'red',
     fontSize: 16,
     fontWeight: '600',
   },
