@@ -1,4 +1,4 @@
-import { View, StyleSheet, FlatList, Text, Image, TouchableOpacity, Pressable, SafeAreaView } from "react-native";
+import { View, StyleSheet, FlatList, Text, Image, TouchableOpacity, Pressable, SafeAreaView, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
 import { useColorScheme } from 'react-native';
@@ -13,6 +13,7 @@ export default function ChooseProduct() {
   const theme = Colors[colorScheme || 'light'];
   const [currentPage, setCurrentPage] = useState(1);
   const [currentProducts, setCurrentProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   /*
   const allProducts = [
@@ -38,11 +39,14 @@ export default function ChooseProduct() {
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setIsLoading(true);
       try {
         const products = await communication.getProductsOptionsByName(params.query, currentPage);
         setCurrentProducts(products);
       } catch (error) {
         console.error("Error fetching products:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -66,7 +70,7 @@ export default function ChooseProduct() {
 
   const handleSelectProduct = (product) => {
     console.log("Selected product:", product);
-    router.push(`/addProduct?product_name=${encodeURIComponent(product.product_name)}&product_id=${encodeURIComponent(product.product_id)}&product_image_url=${encodeURIComponent(product.product_image_url)}`);
+    router.push(`/addProduct?product_name=${encodeURIComponent(product.product_name)}&product_id=${encodeURIComponent(product.product_id)}&product_image_url=${encodeURIComponent(product.product_image_url)}&group_id=${encodeURIComponent(params.group_id)}`);
 };
 
   return (
@@ -82,29 +86,36 @@ export default function ChooseProduct() {
       </Text>
 
       <View style={[styles.productsContainer, { backgroundColor: theme.card }]}>
-        <FlatList
-          data={currentProducts}
-          keyExtractor={(item) => item.product_id}
-          renderItem={({ item }) => (
-            <TouchableOpacity 
-              style={styles.productItem} 
-              onPress={() => handleSelectProduct(item)}
-            >
-              <View style={styles.productContent}>
-                {item.product_image_url ? (
-                  <Image source={{ uri: item.product_image_url }} style={styles.productImage} />
-                ) : null}
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.productText, { color: theme.text }]}>{item.product_name}</Text>
-                  <Text style={[styles.barcodeText, { color: theme.secondaryText }]}>
-                    Barcode: {item.product_id}
-                  </Text>
+        {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.primary} />
+            <Text style={[styles.loadingText, { color: theme.text }]}>Loading products...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={currentProducts}
+            keyExtractor={(item) => item.product_id}
+            renderItem={({ item }) => (
+              <TouchableOpacity 
+                style={styles.productItem} 
+                onPress={() => handleSelectProduct(item)}
+              >
+                <View style={styles.productContent}>
+                  {item.product_image_url ? (
+                    <Image source={{ uri: item.product_image_url }} style={styles.productImage} />
+                  ) : null}
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.productText, { color: theme.text }]}>{item.product_name}</Text>
+                    <Text style={[styles.barcodeText, { color: theme.secondaryText }]}>
+                      Barcode: {item.product_id}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          )}
-          showsVerticalScrollIndicator={false}
-        />
+              </TouchableOpacity>
+            )}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
       </View>
 
       <View style={styles.navigationButtons}>
@@ -117,18 +128,24 @@ export default function ChooseProduct() {
           disabled={currentPage === 1}
         >
           <Ionicons name="chevron-back" size={20} color="white" />
-          <Text style={styles.buttonText}>Previous 10</Text>
+          <Text style={styles.buttonText}>Previous</Text>
         </Pressable>
+
+        <View style={styles.pageCounter}>
+          <Text style={[styles.pageCounterText, { color: theme.text }]}>
+            Page {currentPage}
+          </Text>
+        </View>
 
         <Pressable 
           style={[
-            styles.button, //currentProducts.length
+            styles.button,
             { backgroundColor: currentProducts.length === 10 ? theme.primary : theme.secondaryText }
           ]} 
           onPress={handleNext}
           disabled={currentProducts.length < 10}
         >
-          <Text style={styles.buttonText}>Next 10</Text>
+          <Text style={styles.buttonText}>Next</Text>
           <Ionicons name="chevron-forward" size={20} color="white" />
         </Pressable>
       </View>
@@ -200,6 +217,7 @@ const styles = StyleSheet.create({
   navigationButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginTop: 16,
     gap: 8,
   },
@@ -216,5 +234,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginHorizontal: 8,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  pageCounter: {
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pageCounterText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
