@@ -124,7 +124,7 @@ export default function SearchBar() {
           </Pressable>
           <Pressable
             style={[styles.button, styles.successButton]}
-            onPress={() => router.push(`/scanner?from=${encodeURIComponent(params.group_id)}`)}
+            onPress={() => router.push(`/scanner?group_id=${encodeURIComponent(params.group_id)}`)}
             >
             <Ionicons name="barcode" size={20} color="white" />
             <Text style={styles.buttonText}>Scan Barcode</Text>

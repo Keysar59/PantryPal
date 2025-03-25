@@ -27,8 +27,7 @@ export default function AddProduct() {
   const handleAdd = async () => {
     // Add product logic here
     product = {"product_id" : params.product_id, "product_name" : params.product_name, "product_image_url" : params.product_image_url}
-    //listId?
-    await communication.addProductToList(listId, quantity, product)
+    await communication.addProductToList(params.group_id, quantity, product)
     console.log("Adding %s",params.product_name);
     router.push("group");
   };

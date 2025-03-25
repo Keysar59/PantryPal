@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, Alert, Pressable, useColorScheme } from "react-
 import { CameraView, Camera } from "expo-camera";
 import { useRouter,useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+const communication = require('../src/services/communication');
 
 
 export default function Scanner() {
@@ -39,7 +40,7 @@ export default function Scanner() {
           onPress: async () => {
             setScanned(false);
             const product = await communication.getProductByBarcode(data);
-            router.push(`/${"addProduct"}?product_id=${encodeURIComponent(product.product_id)}&product_name=${encodeURIComponent(product.product_name)}&product_image_url=${encodeURIComponent(product.product_image_url)}`);
+            router.push(`/${"addProduct"}?product_id=${encodeURIComponent(product.product_id)}&product_name=${encodeURIComponent(product.product_name)}&product_image_url=${encodeURIComponent(product.product_image_url)}&group_id=${encodeURIComponent(params.group_id)}`);
         }
       }
       ]
