@@ -58,9 +58,30 @@ async function getProductByBarcode(barcode) {
       console.error("Request failed:", error);
     }
 }
+
+async function addProductToList(listId, quantity, product) {
+    const url = `${BASE_URL}/list/add_product_to_list?list_id=${listId}&quantity=${quantity}`;
+  
+    const options = {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(product),
+    };
+  
+    try {
+      const result = await communicateWithServer(url, options);
+      console.log("Product added successfully:", result);
+    } catch (error) {
+      console.error("Failed to add product to list:", error);
+    }
+}
   
 module.exports = {
     communicateWithServer,
     getProductsOptionsByName,
     getProductByBarcode,
+    addProductToList,
   };
