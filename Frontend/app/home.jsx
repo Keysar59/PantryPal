@@ -1,6 +1,7 @@
 import { Text, View, StyleSheet, Pressable, SafeAreaView, useColorScheme, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import React, { useState, useEffect } from "react";
 // Define theme colors
 import { Colors } from "../constants/Colors" ;
 
@@ -8,12 +9,31 @@ export default function Home() {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
   const router = useRouter();
+  const [groups, setGroups] = useState([]);
+  const url = "idfk"; //////////////////////////////////FIND AN ACTUAL URL
   
-  // This would later be replaced with real data
-  const mockGroups = [
-    { id: 1, name: "Home", itemCount: 12 },
-    { id: 2, name: "Picnic", itemCount: 5 },
-  ];
+  useEffect(() => {
+    const getGroups = async () => {
+      const response = await fetch(url + '/group/get_groups_by_email', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      console.log("Response to group fetching:", data.message);
+      setGroups(data.groups);
+    };
+
+    getGroups();
+
+    //THIS SHOULD BE REMOVED THE SECOND THAT THE SERVER ACTUALLY RESPONDS
+    setGroups([
+      { id: 1, name: "Home"},
+      { id: 2, name: "Picnic"},
+    ]);
+  }, []);
+  
   const handleGroupPress = (groupId, groupName) => {
     router.push({
       pathname: "/group",
@@ -48,7 +68,7 @@ export default function Home() {
       </View>
       
       <View style={styles.groupsContainer}>
-        {mockGroups.map((group) => (
+        {groups.map((group) => (
           <Pressable 
             key={group.id} 
             style={[styles.groupCard, { backgroundColor: theme.card }]}
@@ -59,7 +79,6 @@ export default function Home() {
             </View>
             <View style={styles.groupInfo}>
               <Text style={[styles.groupName, { color: theme.text }]}>{group.name}</Text>
-              <Text style={styles.groupItemCount}>Group id: {group.id}</Text>
             </View>
             <Ionicons name="chevron-forward" size={24} color={theme.secondaryText} />
           </Pressable>
@@ -145,10 +164,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#000',
     marginBottom: 4,
-  },
-  groupItemCount: {
-    fontSize: 14,
-    color: '#8E8E93',
   },
   buttonContainer: {
     flexDirection: 'row',

@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Pressable, TextInput, SafeAreaView, useColorScheme } from "react-native";
+import { Text, View, StyleSheet, Pressable, TextInput, SafeAreaView, useColorScheme, Alert } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
 import { useRouter } from "expo-router";
@@ -10,15 +10,44 @@ export default function JoinGroup() {
   const theme = Colors[colorScheme ?? 'light'];
   const [groupId, setGroupId] = useState("");
   const [error, setError] = useState('');
+  const [awaiting, setAwaiting] = useState(false);
+  const url = "idfk"; //////////////////////////////////FIND AN ACTUAL URL
 
-  const handleJoinGroup = () => {
-    if (!groupId) {
-      setError('Group ID cannot be empty.');
+
+  const validateId = () => {
+    if (groupId.length != 6){
+      Alert.alert(
+        "Invalid group Id"
+      );
+      console.log("Id: '" + groupId + "' is invalid");
+      return false;
+    }
+    return true;
+  };
+
+  const handleJoinGroup = async () => {
+    if (!validateId()){
+      return;
+    }
+    if (awaiting){
+      Alert.alert(
+        "Please wait before pressing again",
+        `Still awaiting response.`
+      );
+      console.log("still awaiting response");
       return;
     }
 
-    setError('');
-    // Logic to join the group using groupId
+    setAwaiting(true);
+    const response = await fetch(url + '/group/join_group', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ groupId }), 
+    });
+    console.log(response);
+    setAwaiting(false);
   };
 
   return (
@@ -44,11 +73,14 @@ export default function JoinGroup() {
             <MaterialIcons name="error-outline" size={20} color="red" />
             <Text style={styles.errorText}>{error}</Text>
           </View>
-        ) : null}
-        <Pressable style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleJoinGroup}>
-          <Ionicons name="enter-outline" size={20} color="white" />
-          <Text style={styles.buttonText}>Join Group</Text>
-        </Pressable>
+          ) : null}
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+            ]}
+            onPress={handleJoinGroup}
+          />
       </View>
     </SafeAreaView>
   );

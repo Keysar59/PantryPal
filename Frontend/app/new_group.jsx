@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Pressable, TextInput, SafeAreaView, useColorScheme } from "react-native";
+import { Text, View, StyleSheet, Pressable, TextInput, SafeAreaView, useColorScheme, Alert } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
 import { useRouter } from "expo-router";
@@ -10,15 +10,51 @@ export default function NewGroup() {
   const theme = Colors[colorScheme ?? 'light'];
   const [groupName, setGroupName] = useState("");
   const [error, setError] = useState('');
+  const [awaiting, setAwaiting] = useState(false);
+  const url = "idfk"; //////////////////////////////////FIND AN ACTUAL URL
 
-  const handleCreateGroup = () => {
-    if (!groupName) {
-      setError('Group name cannot be empty.');
+  const validateName = () => {
+    if (groupName == ""){
+      Alert.alert(
+        "Invalid group name",
+        `Group name cannot be empty.`
+      );
+      console.log("groupName is an empty string");
+      return false;
+    }
+    if (groupName.length > 20){
+      Alert.alert(
+        "Invalid group name",
+        `Group name cannot be longer than 20 characters.`
+      );
+      console.log("groupName is longer than 20 characters");
+      return false;
+    }
+    return true;
+  };
+  const handleCreateGroup = async () => {
+    if (!validateName()){
+      return;
+    }
+    if (awaiting){
+      Alert.alert(
+        "Please wait before pressing again",
+        `Still awaiting response.`
+      );
+      console.log("still awaiting response");
       return;
     }
 
-    setError('');
-    // ... existing code ...
+    setAwaiting(true);
+    const response = await fetch(url + '/group/create_group', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ groupName }), 
+    });
+    console.log(response);
+    setAwaiting(false);
   };
 
   return (
@@ -45,10 +81,13 @@ export default function NewGroup() {
             <Text style={styles.errorText}>{error}</Text>
           </View>
         ) : null}
-        <Pressable style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleCreateGroup}>
-          <Ionicons name="add-circle-outline" size={20} color="white" />
-          <Text style={styles.buttonText}>Create Group</Text>
-        </Pressable>
+        <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+            ]}
+            onPress={handleCreateGroup}
+          />
       </View>
     </SafeAreaView>
   );

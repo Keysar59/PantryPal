@@ -2,6 +2,7 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
  import { useState } from "react";
  import { Ionicons } from "@expo/vector-icons";
  import { useLocalSearchParams, useRouter } from "expo-router";
+ const [awaiting, setAwaiting] = useState(false);
  // Define theme colors (same as in index.jsx)
  const Colors = {
    light: {
@@ -122,8 +123,26 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
         },
         {
           text: "OK",
-          onPress: () => {
-            // Add your delete group logic here
+          onPress: async () => {
+            if (awaiting){
+              return;
+            }
+            setAwaiting(true);
+            Alert.alert(
+              "Deleting group"
+            );
+            console.log("Deleting group with Id:", groupId);
+
+            const response = await fetch(url + '/group/delete_group', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ groupId }), 
+            });
+            console.log(response);
+            setAwaiting(false);
+            return;
           }
         }
       ]
