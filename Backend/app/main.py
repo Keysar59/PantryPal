@@ -14,16 +14,17 @@ app = FastAPI(redoc_url="/redoc")
 origins = [
     "http://localhost:3000",
     "http://localhost:8000",
+    "http://localhost:8080",
+    "http://localhost:8081",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origins,  # Or specify your frontend domain, e.g., ["http://localhost:3000"]
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
 )
-
 @app.get("/")
 def read_root():
     return {"Hello": "World"}

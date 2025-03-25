@@ -6,6 +6,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
+# Ignore all compiled Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
 __pycache__/
 *.pyc
