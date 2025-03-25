@@ -129,8 +129,17 @@ class GroupRepositorySQL(GroupRepositoryInterface):
 
     def add_user_to_group(self, group_id: int, group_name: str, user_email: str) -> bool:
         """
-        Checks if user is not in the spesified group and if so adds the user to the spesified group.
+        Checks if user is not in the spesified group (and group exists) and if so adds the user to the spesified group.
         """
+        query = "SELECT id FROM groups WHERE id = %s"
+        with self._get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (group_id,))
+                results = cursor.fetchone()
+
+        if not results:  # Makes sure group exists.
+            return False # TODO: Raise error, group doesn't exist.
+
         query = "SELECT email FROM user_to_groups WHERE group_id = %s and email = %s"
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
@@ -277,7 +286,7 @@ class GroupRepositorySQL(GroupRepositoryInterface):
             return False # TODO: Raise error, no group found.
         return results[0]
 
-    def get_list_ids_by_group_id(self, group_id) -> list[int]:
+    def get_list_ids_by_group_id(self, group_id: int) -> list[int]:
         """
         Gets the id's for the pantry list, the default list and the shopping list of the spesified group.
         """
@@ -299,4 +308,33 @@ class GroupRepositorySQL(GroupRepositoryInterface):
                     list_ids.append(results[0])
 
         return list_ids
-                    
+
+    def in_group(self, group_id: int, user_email: str) -> bool:
+        """
+        Checks if user is in given group.
+        """
+        query = "SELECT email FROM user_to_groups WHERE group_id = %s and email = %s"
+        with self._get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (group_id, user_email))
+                results = cursor.fetchone()
+
+        if results:
+            return True
+
+        return False
+                
+    def is_admin(self, group_id: int, user_email: str) -> bool:
+        """
+        Checks if user is admin in given group.
+        """
+        query = "SELECT is_admin FROM user_to_groups WHERE group_id = %s and email = %s"
+        with self._get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (group_id, user_email))
+                results = cursor.fetchone()
+
+        if not results:  # Makes sure group exists.
+            return False # TODO: Raise error, no group found.
+
+        return results[0]

@@ -30,18 +30,31 @@ def create_group(request: Request,
     return {"message": "Group created successfully", "group_id": group_id}
 
 @router.post("/delete_group")
-def delete_group(group_id: int, 
-                 group_service: GroupManagementService = Depends(get_group_management_service)):
+def delete_group(request: Request,
+                 group_id: int, 
+                 group_service: GroupManagementService = Depends(get_group_management_service),
+                 authentication_service: AuthenticationService = Depends(get_authentication_service)):
     """
     Deletes a group.
     :param group_id: The id of the group to delete.
     """
-    success = group_service.delete_group(group_id)
 
-    if not success:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Group could not be deleted")
+    token = request.cookies.get("session_token")
+    user_email = authentication_service.verify_token(token)  # Verify token
 
-    return {"message": "Group deleted successfully"}
+    authorized = group_service.is_admin(group_id, user_email)
+
+    if authorized:
+
+        success = group_service.delete_group(group_id)
+
+        if not success:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Group could not be deleted")
+
+        return {"message": "Group deleted successfully"}
+
+    else:
+        return {"message": "User unauthorized"}
 
 @router.post("/join_group")
 def join_group(request: Request,
@@ -86,35 +99,61 @@ def leave_group(request: Request,
     return {"message": "User left group successfully"}
 
 @router.post("/promote_user")
-def promote_user(group_id: int, user_email: str,
-                 group_service: GroupManagementService = Depends(get_group_management_service)):
+def promote_user(request: Request,
+                 group_id: int, user_email: str,
+                 group_service: GroupManagementService = Depends(get_group_management_service),
+                 authentication_service: AuthenticationService = Depends(get_authentication_service)):
     """
     Promotes a user to admin.
     :param group_id: The id of the group.
     :param user_email: The email of the user to promote to admin.
     """
-    success = group_service.promote_user_to_admin(group_id, user_email)
 
-    if not success:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User could not be promoted to admin")
+    token = request.cookies.get("session_token")
+    promoter_email = authentication_service.verify_token(token)  # Verify token
 
-    return {"message": "User promoted to admin successfully"}
+    authorized = group_service.is_admin(group_id, promoter_email)
+
+    if authorized:
+
+        success = group_service.promote_user_to_admin(group_id, user_email)
+
+        if not success:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User could not be promoted to admin")
+
+        return {"message": "User promoted to admin successfully"}
+
+    else:
+        return {"message": "User unauthorized"}
 
 
 @router.post("/demote_user")
-def demote_user(group_id: int, user_email: str,
-                group_service: GroupManagementService = Depends(get_group_management_service)):
+def demote_user(request: Request,
+                group_id: int, user_email: str,
+                group_service: GroupManagementService = Depends(get_group_management_service),
+                authentication_service: AuthenticationService = Depends(get_authentication_service)):
     """
     Demotes a user from admin to user.
     :param group_id: The id of the group.
     :param user_email: The email of the admin to demote to user.
     """
-    success = group_service.demote_admin_to_user(group_id, user_email)
 
-    if not success:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User could not be demoted from admin to user")
+    token = request.cookies.get("session_token")
+    demoter_email = authentication_service.verify_token(token)  # Verify token
 
-    return {"message": "Admin demoted to user successfully"}
+    authorized = group_service.is_admin(group_id, demoter_email)
+
+    if authorized:
+
+        success = group_service.demote_admin_to_user(group_id, user_email)
+
+        if not success:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User could not be demoted from admin to user")
+
+        return {"message": "Admin demoted to user successfully"}
+
+    else:
+        return {"message": "User unauthorized"}
 
 @router.get("/get_groups")
 def get_groups(request: Request,
@@ -136,30 +175,55 @@ def get_groups(request: Request,
     return {"message": "Groups retrieved successfully", "groups": groups}
 
 @router.get("/get_group_name_by_id")
-def get_group_name_by_id(group_id: int,
-                         group_service: GroupManagementService = Depends(get_group_management_service)):
+def get_group_name_by_id(request: Request,
+                         group_id: int,
+                         group_service: GroupManagementService = Depends(get_group_management_service),
+                         authentication_service: AuthenticationService = Depends(get_authentication_service)):
     """
     Gets the name of a group by its id.
     :param group_id: The id of the group.
     """
-    group_name = group_service.get_group_name_by_id(group_id)
 
-    if not group_name:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Group could not be found")
+    token = request.cookies.get("session_token")
+    user_email = authentication_service.verify_token(token)  # Verify token
 
-    return {"message": "Group name retrieved successfully", "group_name": group_name}
+    user_in_group = group_service.in_group(group_id, user_email)
+
+    if user_in_group:
+
+        group_name = group_service.get_group_name_by_id(group_id)
+
+        if not group_name:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Group could not be found")
+
+        return {"message": "Group name retrieved successfully", "group_name": group_name}              
+
+    else:
+        return {"message": "User not in group"} 
 
 @router.get("/get_list_ids_by_group_id")
-def get_list_ids_by_group_id(group_id: int,
-                             group_service: GroupManagementService = Depends(get_group_management_service)):
+def get_list_ids_by_group_id(request: Request,
+                             group_id: int,
+                             group_service: GroupManagementService = Depends(get_group_management_service),
+                             authentication_service: AuthenticationService = Depends(get_authentication_service)):
     """
     Gets the ids of the lists in a group.
     :param group_id: The id of the group.
     """
-    list_ids = group_service.get_list_ids_by_group_id(group_id)
 
-    if not list_ids:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No lists were found")
+    token = request.cookies.get("session_token")
+    user_email = authentication_service.verify_token(token)  # Verify token
 
-    return {"message": "Lists retrieved successfully", "pantry_list_id": list_ids[0], "default_list_id": list_ids[1], "shopping_list_id": list_ids[2]}
+    user_in_group = group_service.in_group(group_id, user_email)
 
+    if user_in_group:
+
+        list_ids = group_service.get_list_ids_by_group_id(group_id)
+
+        if not list_ids:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No lists were found")
+
+        return {"message": "Lists retrieved successfully", "pantry_list_id": list_ids[0], "default_list_id": list_ids[1], "shopping_list_id": list_ids[2]}
+
+    else:
+        return {"message": "User not in group"} 

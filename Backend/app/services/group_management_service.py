@@ -98,3 +98,21 @@ class GroupManagementService:
         """
 
         return self.group_repository.get_list_ids_by_group_id(group_id)
+
+    def in_group(self, group_id: int, user_email: str) -> bool:
+        """
+        Checks if user is in given group.
+        :param group_id: The id of the group.
+        :param user_email: The email of the user.
+        """
+
+        return self.group_repository.in_group(group_id, user_email)
+
+    def is_admin(self, group_id: int, user_email: str) -> bool:
+        """
+        Checks if user is admin in given group.
+        :param group_id: The id of the group.
+        :param user_email: The email of the user.
+        """
+
+        return self.group_repository.is_admin(group_id, user_email)

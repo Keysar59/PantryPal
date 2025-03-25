@@ -28,3 +28,9 @@ class GroupRepositoryInterface:
     def get_list_ids_by_group_id(self, group_id: int) -> list[int]:
         pass
 
+    def in_group(self, group_id: int, user_email: str) -> bool:
+        pass
+
+    def is_admin(self, group_id: int, user_email: str) -> bool:
+        pass
+
