@@ -100,7 +100,7 @@ def demote_user(group_id: int, user_email: str,
 def get_groups_by_user_email(user_email: str,
                              group_service: GroupManagementService = Depends(get_group_management_service)):
     """
-    Gets all groups a user is in.
+    Gets the id and name of all the groups a user is in.
     :param user_email: The email of the user.
     """
     groups = group_service.get_groups_by_user_email(user_email)
