@@ -1,7 +1,7 @@
 import jwt as pyjwt
 import datetime
 from typing import Optional
-from app.domain.exceptions import UserAlreadyExistsException, InvalidSignupDataException, UserDoesNotExistsException, ExpiredTokenException, InvalidTokenException
+from app.domain.exceptions import UserAlreadyExistsException, InvalidSignupDataException, UserDoesNotExistsException, ExpiredTokenException, InvalidTokenException, PasswordIncorrectException
 from app.domain.entities.user import User
 from app.domain.repositories_interfaces.user_repository_interface import UserRepositoryInterface
 
@@ -32,6 +32,8 @@ class AuthenticationService:
     
     def login_user(self, user_data: User) -> Optional[str]:
         user = self.user_repository.get_user_by_email(user_data.email)
+        if user.password != user_data.password:
+            raise PasswordIncorrectException()
         if not user:
             raise UserDoesNotExistsException()
         token = self.create_token(user.email)

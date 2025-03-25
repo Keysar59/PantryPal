@@ -30,3 +30,7 @@ class ExpiredTokenException(AppException):
 class InvalidTokenException(AppException):
     def __init__(self, message: str = "Token invalid."):
         super().__init__(status_code=498, detail=message)
+
+class PasswordIncorrectException(AppException):
+    def __init__(self, message: str = "Password incorrect."):
+        super().__init__(status_code=401, detail=message)
