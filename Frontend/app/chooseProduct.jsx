@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useColorScheme } from 'react-native';
 import { Colors } from "../constants/Colors";
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import Animated, { FadeIn } from "react-native-reanimated";
 const communication = require('../src/services/communication');
 
 export default function ChooseProduct() {
@@ -73,6 +74,28 @@ export default function ChooseProduct() {
     router.push(`/addProduct?product_name=${encodeURIComponent(product.product_name)}&product_id=${encodeURIComponent(product.product_id)}&product_image_url=${encodeURIComponent(product.product_image_url)}&group_id=${encodeURIComponent(params.group_id)}`);
 };
 
+  const NoProductsFound = () => (
+    <Animated.View 
+      style={styles.noProductsContainer} 
+      entering={FadeIn.duration(800)}
+    >
+      <View style={[styles.iconContainer, { backgroundColor: theme.card }]}>
+        <Ionicons name="sad-outline" size={64} color="#FF3B30" />
+      </View>
+      <Text style={[styles.noProductsTitle, { color: "#FF3B30" }]}>Unlucky</Text>
+      <Text style={[styles.noProductsSubtitle, { color: theme.secondaryText }]}>
+        There are no products matching "{params.query}"
+      </Text>
+      <Pressable 
+        style={[styles.retryButton, { backgroundColor: "#FF3B30" }]} 
+        onPress={() => router.back()}
+      >
+        <Ionicons name="arrow-back" size={20} color="white" />
+        <Text style={styles.buttonText}>Try Another Search</Text>
+      </Pressable>
+    </Animated.View>
+  );
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.header}>
@@ -91,6 +114,8 @@ export default function ChooseProduct() {
             <ActivityIndicator size="large" color={theme.primary} />
             <Text style={[styles.loadingText, { color: theme.text }]}>Loading products...</Text>
           </View>
+        ) : currentProducts.length === 0 ? (
+          <NoProductsFound />
         ) : (
           <FlatList
             data={currentProducts}
@@ -118,37 +143,39 @@ export default function ChooseProduct() {
         )}
       </View>
 
-      <View style={styles.navigationButtons}>
-        <Pressable 
-          style={[
-            styles.button, 
-            { backgroundColor: currentPage > 1 ? theme.primary : theme.secondaryText }
-          ]} 
-          onPress={handlePrevious}
-          disabled={currentPage === 1}
-        >
-          <Ionicons name="chevron-back" size={20} color="white" />
-          <Text style={styles.buttonText}>Previous</Text>
-        </Pressable>
+      {currentProducts.length > 0 && (
+        <View style={styles.navigationButtons}>
+          <Pressable 
+            style={[
+              styles.button, 
+              { backgroundColor: currentPage > 1 ? theme.primary : theme.secondaryText }
+            ]} 
+            onPress={handlePrevious}
+            disabled={currentPage === 1}
+          >
+            <Ionicons name="chevron-back" size={20} color="white" />
+            <Text style={styles.buttonText}>Previous</Text>
+          </Pressable>
 
-        <View style={styles.pageCounter}>
-          <Text style={[styles.pageCounterText, { color: theme.text }]}>
-            Page {currentPage}
-          </Text>
+          <View style={styles.pageCounter}>
+            <Text style={[styles.pageCounterText, { color: theme.text }]}>
+              Page {currentPage}
+            </Text>
+          </View>
+
+          <Pressable 
+            style={[
+              styles.button,
+              { backgroundColor: currentProducts.length === 10 ? theme.primary : theme.secondaryText }
+            ]} 
+            onPress={handleNext}
+            disabled={currentProducts.length < 10}
+          >
+            <Text style={styles.buttonText}>Next</Text>
+            <Ionicons name="chevron-forward" size={20} color="white" />
+          </Pressable>
         </View>
-
-        <Pressable 
-          style={[
-            styles.button,
-            { backgroundColor: currentProducts.length === 10 ? theme.primary : theme.secondaryText }
-          ]} 
-          onPress={handleNext}
-          disabled={currentProducts.length < 10}
-        >
-          <Text style={styles.buttonText}>Next</Text>
-          <Ionicons name="chevron-forward" size={20} color="white" />
-        </Pressable>
-      </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -254,5 +281,44 @@ const styles = StyleSheet.create({
   pageCounterText: {
     fontSize: 16,
     fontWeight: '600',
+  },
+  noProductsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  iconContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  noProductsTitle: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  noProductsSubtitle: {
+    fontSize: 16,
+    textAlign: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  retryButton: {
+    flexDirection: 'row',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    width: 200,
   },
 });
