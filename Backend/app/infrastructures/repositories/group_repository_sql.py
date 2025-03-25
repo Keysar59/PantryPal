@@ -16,7 +16,7 @@ load_dotenv()
 class GroupRepositorySQL(GroupRepositoryInterface):
     def __init__(self):
         """
-        Initiate the repository. Creates tables in necessary.
+        Initiate the repository. Creates tables if necessary.
         """
         self.db_url = os.getenv("DATABASE_URL")
         # self._delete_tables()
@@ -38,9 +38,9 @@ class GroupRepositorySQL(GroupRepositoryInterface):
                     id INT PRIMARY KEY,
                     name VARCHAR(255) NOT NULL,
                     creator VARCHAR(255) NOT NULL,
-                    pantry_list_id INT NOT NULL,
-                    default_list_id INT NOT NULL,
-                    shopping_list_id INT NOT NULL
+                    pantry_list_id VARCHAR(9) NOT NULL,
+                    default_list_id VARCHAR(9) NOT NULL,
+                    shopping_list_id VARCHAR(9) NOT NULL
                 )
             '''
             ,
@@ -48,6 +48,7 @@ class GroupRepositorySQL(GroupRepositoryInterface):
                 CREATE TABLE IF NOT EXISTS user_to_groups (
                     email VARCHAR(255),
                     group_id INT,
+                    group_name VARCHAR(255) NOT NULL,
                     is_admin BOOLEAN NOT NULL DEFAULT FALSE,
                     PRIMARY KEY (email, group_id),
                     FOREIGN KEY (group_id) REFERENCES groups(id)
@@ -92,10 +93,10 @@ class GroupRepositorySQL(GroupRepositoryInterface):
             if not results:  # Makes sure id is not in use.
                 id_found = True
 
-        # TODO: Create new lists
-        pantry_list_id = 1
-        default_list_id = 1
-        shopping_list_id = 1
+        id_in_string = str(unique_id)
+        pantry_list_id = id_in_string + '1'
+        default_list_id = id_in_string + '2'
+        shopping_list_id = id_in_string + '3'
         query = '''
         INSERT INTO groups (id, name, creator, pantry_list_id, default_list_id, shopping_list_id) 
         VALUES (%s, %s, %s, %s, %s, %s) RETURNING id
@@ -126,7 +127,7 @@ class GroupRepositorySQL(GroupRepositoryInterface):
         return True
 
 
-    def add_user_to_group(self, group_id: int, user_email: str) -> bool:
+    def add_user_to_group(self, group_id: int, group_name: str, user_email: str) -> bool:
         """
         Checks if user is not in the spesified group and if so adds the user to the spesified group.
         """
@@ -140,13 +141,13 @@ class GroupRepositorySQL(GroupRepositoryInterface):
             return False # TODO: Raise error, user already in group found.
         
         query = '''
-        INSERT INTO user_to_groups (group_id, email) 
-        VALUES (%s, %s)
+        INSERT INTO user_to_groups (group_id, group_name, email) 
+        VALUES (%s, %s, %s)
         '''
 
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
-                cursor.execute(query, (group_id, user_email))
+                cursor.execute(query, (group_id, group_name, user_email))
 
         return True
 
@@ -242,11 +243,11 @@ class GroupRepositorySQL(GroupRepositoryInterface):
         return True
       
 
-    def get_groups_by_user_email(self, user_email: str) -> list[int]:
+    def get_groups_by_user_email(self, user_email: str) -> list[tuple[int]]:
         """
         Gets a list of all the id's of the groups the spesified user is in.
         """
-        query = "SELECT group_id FROM user_to_groups WHERE email = %s"
+        query = "SELECT group_id, group_name FROM user_to_groups WHERE email = %s"
         with self._get_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query, (user_email,))
@@ -255,11 +256,12 @@ class GroupRepositorySQL(GroupRepositoryInterface):
         if not results:  # Makes sure group exists.
             return False # TODO: Raise error, no group found.
 
-        group_ids = []
-        for result in results:
-            group_ids.append(result[0])
 
-        return group_ids
+        groups = []
+        for group_id, group_name in results:
+            groups.append((group_id, group_name))
+
+        return groups
 
     def get_group_name_by_id(self, group_id: int) -> str:
         """

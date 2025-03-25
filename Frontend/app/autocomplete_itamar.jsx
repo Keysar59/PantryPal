@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
-import { TextInput, View, StyleSheet, FlatList, Pressable, Text, Image, TouchableWithoutFeedback, SafeAreaView, Keyboard, ActivityIndicator } from "react-native";
+import { TextInput, View, StyleSheet, FlatList, Text, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useState, useEffect } from "react";
 
 async function getProducts(page = 1) {
   let endpoint = ""; // endpoint for getting product by name
   const res = await fetch(endpoint);
   if (res) {
     // const data = await res.json();
-    const data = [
-      { barcode: "0000000000", name: "test1", image_url: "https://cpmr-islands.org/wp-content/uploads/sites/4/2019/07/Test-Logo-Small-Black-transparent-1.png" },
-      { barcode: "0000000000", name: "test1", image_url: "https://cpmr-islands.org/wp-content/uploads/sites/4/2019/07/Test-Logo-Small-Black-transparent-1.png" },
-      { barcode: "0000000000", name: "test2", image_url: "https://cpmr-islands.org/wp-content/uploads/sites/4/2019/07/Test-Logo-Small-Black-transparent-1.png" },
-      { barcode: "0000000000", name: "test3", image_url: "https://cpmr-islands.org/wp-content/uploads/sites/4/2019/07/Test-Logo-Small-Black-transparent-1.png" },
-      { barcode: "0000000000", name: "test4", image_url: "https://cpmr-islands.org/wp-content/uploads/sites/4/2019/07/Test-Logo-Small-Black-transparent-1.png" },
-      { barcode: "0000000000", name: "test5", image_url: null }
+    const exampleSuggestions = [
+      { name: "Apple", barcode: "123456", image_url: "https://www.officedepot.co.il/media/amasty/shopby/option_images/app-removebg-preview.png" },
+      { name: "ABanana", barcode: "234567", image_url: "https://static.wikia.nocookie.net/surrealmemes/images/b/b5/Ba.png/revision/latest?cb=20200325160337" },
+      { name: "ACherry", barcode: "345678", image_url: "https://i.imgflip.com/1sz5j9.jpg?a483672" },
+      { name: "ADate", barcode: "456789", image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_JSDLrbat3blYyZ22rfZoxVSM-r7rWL2EGw&s" },
+      { name: "AFig", barcode: "567890", image_url: "https://i.ytimg.com/vi/F2coGXkY0Mk/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLD40OTzMswLb9q7Ru4Op9vKAT6lFQ" },
+      { name: "AGrape", barcode: "678901", image_url: null },
     ];
     return data;
   }
@@ -22,7 +22,7 @@ async function getProducts(page = 1) {
 
 export default function SearchBar() {
   const [input, setInput] = useState("");
-  const [data, setData] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function SearchBar() {
       if (input.length > 2) {
         fetchProducts();
       } else {
-        setData([]);
+        setSuggestions([]);
       }
     }, 300); // Debounce time in milliseconds
 
@@ -42,73 +42,76 @@ export default function SearchBar() {
     const products = await getProducts();
     const regex = new RegExp(input, "i");
     const filteredProducts = products.filter(product => regex.test(product.name));
-    setData(filteredProducts);
+    setSuggestions(filteredProducts);
     setLoading(false);
   };
 
-  const getItemText = (item) => {
-    const name = item.name
-    return (
-      <View style={styles.itemTextContainer}>
-        {item.image_url ? (
-          <Image source={{ uri: item.image_url }} style={styles.imageStyle} />
-        ) : (
-          <Ionicons name="image" color="black" size={30} />
-        )}
-        <View style={styles.textContainer}>
-          <Text style={styles.highlightedText}>
-            {name}
-          </Text>
-        </View>
-      </View>
-    );
+    
+  
+  
+  const handleSelectSuggestion = (suggestion) => {
+    setInput(suggestion);
+    setSuggestions([]); // Clear suggestions after selection
+  };
+
+  const handleClear = () => {
+    setInput(""); // Clear the input
+    setSuggestions([]); // Clear suggestions
   };
 
   return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color="#8E8E93" />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search..."
-            placeholderTextColor="#8E8E93"
-            value={input}
-            onChangeText={setInput}
+    <View style={styles.searchContainer}>
+      <Ionicons name="search" size={20} color="#8E8E93" />
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search..."
+        placeholderTextColor="#8E8E93"
+        value={input}
+        onChangeText={setInput}
+      />
+      {input.length > 0 && ( // Show clear button only if there is text
+        <TouchableOpacity onPress={handleClear}>
+          <Ionicons name="close-circle" size={20} color="#8E8E93" />
+        </TouchableOpacity>
+      )}
+      
+      {loading ? (
+        <ActivityIndicator size="large" color="#007AFF" />
+      ) :(
+        suggestions.length > 0 && (
+        <View style={[styles.suggestionsContainer, { maxHeight: 270 }]}>
+          <FlatList
+            data={suggestions}
+            keyExtractor={(item) => item.name}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.suggestionItem} onPress={() => handleSelectSuggestion(item.name)}>
+                <View style={{ flex: 1, marginLeft: 8 }}>
+                  <Text style={styles.suggestionText}>
+                    {item.name}
+                  </Text>
+                  <Text style={styles.barcodeText}>
+                    Barcode: {item.barcode}
+                  </Text>
+                  {item.image_url ? (
+                    <Image source={{ uri: item.image_url }} style={styles.imageStyle} />
+                  ) : (
+                    <Ionicons name="image" color="black" size={30} />
+                  )}
+                </View>
+              </TouchableOpacity>
+            )}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={true}
+            scrollEnabled={suggestions.length > 3}
           />
-          {input.length > 0 && (
-            <Pressable onPress={() => setInput("")}>
-              <Ionicons name="close-circle" size={20} color="#8E8E93" />
-            </Pressable>
-          )}
         </View>
-        {loading ? (
-          <ActivityIndicator size="large" color="#007AFF" />
-        ) : (
-          data.length > 0 && (
-            <FlatList
-              data={data}
-              renderItem={({ item }) => (
-                <Pressable
-                  style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
-                  onPress={() => {
-                    alert("Selected: " + JSON.stringify(item));
-                    Keyboard.dismiss(); // Dismiss keyboard on selection
-                  }}
-                >
-                  {getItemText(item)}
-                </Pressable>
-              )}
-              keyExtractor={(item) => item.barcode}
-              showsVerticalScrollIndicator={false}
-            />
-          )
-        )}
-      </SafeAreaView>
+      )
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -128,17 +131,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
     padding: 0,
   },
-  itemTextContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 15,
+  suggestionsContainer: {
+    position: 'absolute',
+    top: 50,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    elevation: 3,
+    zIndex: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
-  imageStyle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+  suggestionItem: {
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
-  textContainer: { marginLeft: 10, flexShrink: 1 },
-  mainText: { fontWeight: "700" },
-  highlightedText: { fontWeight: "700", color: "#007AFF" }, // Highlighted text style
+  suggestionText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  barcodeText: {
+    fontSize: 14,
+    color: "#888",
+  },
+  suggestionImage: {
+    width: 60,
+    height: 60,
+    marginLeft: 8,
+  },
 });
