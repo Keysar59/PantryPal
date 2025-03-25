@@ -47,6 +47,24 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen 
+        name="addProduct"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen 
+        name="searchbar"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen 
+        name="chooseProduct"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen 
         name="add_product_pantry"
         options={{
           headerShown: false,
