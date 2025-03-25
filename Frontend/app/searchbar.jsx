@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useColorScheme } from 'react-native';
 import { Colors } from "../constants/Colors";
 import { useRouter,useLocalSearchParams } from 'expo-router';
+const communication = require('../src/services/communication');
 
 export default function SearchBar() {
   const router = useRouter();
@@ -12,10 +13,11 @@ export default function SearchBar() {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme || 'light'];
 
-  const handleSearch = (text) => {
+  const handleSearch = async (text) => {
     setQuery(text);
+    /*
     const exampleSuggestions = [
-      { product_name: "Apple", product_id: "123456", quantity: 10, product_image_url: "https://www.officedepot.co.il/media/amasty/shopby/option_images/app-removebg-preview.png" },
+    { product_name: "Apple", product_id: "123456", quantity: 10, product_image_url: "https://www.officedepot.co.il/media/amasty/shopby/option_images/app-removebg-preview.png" },
     { product_name: "Banana", product_id: "234567", quantity: 5, product_image_url: "https://static.wikia.nocookie.net/surrealmemes/images/b/b5/Ba.png/revision/latest?cb=20200325160337" },
     { product_name: "Cherry", product_id: "345678", quantity: 20, product_image_url: "https://i.imgflip.com/1sz5j9.jpg?a483672" },
     { product_name: "Date", product_id: "456789", quantity: 15, product_image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_JSDLrbat3blYyZ22rfZoxVSM-r7rWL2EGw&s" },
@@ -31,9 +33,10 @@ export default function SearchBar() {
     { product_name: "Mango", product_id: "901234", quantity: 11, product_image_url: "https://media.craiyon.com/2023-09-09/9b441cc182bd45fda8dba904d7bcc4e5.webp" },
     { product_name: "Orange", product_id: "012345", quantity: 14, product_image_url: "https://i.ytimg.com/vi/ZN5PoW7_kdA/hqdefault.jpg" },
   
-    ];
-    if (text.length > 0) {
-      setSuggestions(exampleSuggestions.filter(item => item.product_name.toLowerCase().startsWith(text.toLowerCase())));
+    ];*/
+    if (text.length > 2) {
+      const suggestions = await communication.getProductsOptionsByName(text)
+      setSuggestions(suggestions);
     } else {
       setSuggestions([]);
     }
@@ -60,7 +63,7 @@ export default function SearchBar() {
     const chooseProduct = () => {
       
       console.log("Adding...", query ); 
-      router.push(`/${"chooseProduct"}?product=${encodeURIComponent(query)}`);
+      router.push(`/${"chooseProduct"}?query=${encodeURIComponent(query)}`);
     };
 
   return (

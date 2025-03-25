@@ -1,17 +1,20 @@
 import { View, StyleSheet, FlatList, Text, Image, TouchableOpacity, Pressable, SafeAreaView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useColorScheme } from 'react-native';
 import { Colors } from "../constants/Colors";
 import { useRouter, useLocalSearchParams } from 'expo-router';
+const communication = require('../src/services/communication');
 
 export default function ChooseProduct() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme || 'light'];
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentProducts, setCurrentProducts] = useState([]);
 
+  /*
   const allProducts = [
     { product_name: "Apple", product_id: "123456", quantity: 10, product_image_url: "https://www.officedepot.co.il/media/amasty/shopby/option_images/app-removebg-preview.png" },
     { product_name: "Banana", product_id: "234567", quantity: 5, product_image_url: "https://static.wikia.nocookie.net/surrealmemes/images/b/b5/Ba.png/revision/latest?cb=20200325160337" },
@@ -30,22 +33,33 @@ export default function ChooseProduct() {
     { product_name: "Orange", product_id: "012345", quantity: 14, product_image_url: "https://i.ytimg.com/vi/ZN5PoW7_kdA/hqdefault.jpg" },
   
   ];
+  */
+  //
 
-  const productsPerPage = 10;
-  const totalPages = Math.ceil(allProducts.length / productsPerPage);
-  const currentProducts = allProducts.slice(
-    currentPage * productsPerPage,
-    (currentPage + 1) * productsPerPage
-  );
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const products = await communication.getProductsOptionsByName(params.query, currentPage);
+        setCurrentProducts(products);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, [params.query, currentPage]);
+
+
+
 
   const handlePrevious = () => {
-    if (currentPage > 0) {
+    if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
 
   const handleNext = () => {
-    if (currentPage < totalPages - 1) {
+    if (currentProducts.length > 0) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -64,7 +78,7 @@ export default function ChooseProduct() {
         <Text style={[styles.title, { color: theme.text }]}>Choose Product</Text>
       </View>
       <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-        Displaying options for {params.product}:
+        Displaying options for {params.query}:
       </Text>
 
       <View style={[styles.productsContainer, { backgroundColor: theme.card }]}>
@@ -97,10 +111,10 @@ export default function ChooseProduct() {
         <Pressable 
           style={[
             styles.button, 
-            { backgroundColor: currentPage > 0 ? theme.primary : theme.secondaryText }
+            { backgroundColor: currentPage > 1 ? theme.primary : theme.secondaryText }
           ]} 
           onPress={handlePrevious}
-          disabled={currentPage === 0}
+          disabled={currentPage === 1}
         >
           <Ionicons name="chevron-back" size={20} color="white" />
           <Text style={styles.buttonText}>Previous 10</Text>
@@ -108,11 +122,11 @@ export default function ChooseProduct() {
 
         <Pressable 
           style={[
-            styles.button, 
-            { backgroundColor: currentPage < totalPages - 1 ? theme.primary : theme.secondaryText }
+            styles.button, //currentProducts.length
+            { backgroundColor: currentProducts.length === 10 ? theme.primary : theme.secondaryText }
           ]} 
           onPress={handleNext}
-          disabled={currentPage === totalPages - 1}
+          disabled={currentProducts.length < 10}
         >
           <Text style={styles.buttonText}>Next 10</Text>
           <Ionicons name="chevron-forward" size={20} color="white" />
