@@ -47,7 +47,7 @@ export default function SearchBar() {
 
   const handleAddProduct = async () => {
     if (!query) {
-      setError('Name and quantity cannot be empty.');
+      setError('Name and cannot be empty.');
       console.log("error");
       return;
     }
@@ -62,7 +62,7 @@ export default function SearchBar() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.header}>
-        <Pressable style={styles.backButton} onPress={() => {/* Add back navigation logic */}}>
+        <Pressable style={styles.backButton} onPress={() => {router.back()}}>
           <Ionicons name="chevron-back" size={28} color="#007AFF" />
         </Pressable>
         <Text style={[styles.title, { color: theme.text }]}>Search</Text>

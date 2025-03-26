@@ -45,10 +45,7 @@ export default function Home() {
   }, []);
   
   const handleGroupPress = (groupId, groupName) => {
-    router.push({
-      pathname: "/group",
-      params: { id: groupId, name: groupName }
-    });
+    router.push(`/searchbar?group_id=${encodeURIComponent(groupId)}&group_name=${encodeURIComponent(groupName)}`);
   };
 
   const handleLogout = () => {

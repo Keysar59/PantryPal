@@ -27,6 +27,8 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
  export default function Group() {
    const router = useRouter();
    const colorScheme = useColorScheme();
+   const params = useLocalSearchParams();
+  //  console.log("ss___________s",params.group_id);
    const theme = Colors[colorScheme ?? 'light'];
    const { name } = useLocalSearchParams();
    const [activeTab, setActiveTab] = useState("shopping"); // "shopping" or "pantry"
@@ -133,10 +135,10 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
             Alert.alert(
               "Deleting group"
             );
-            console.log("Deleting group with Id:", groupId);
+            console.log("Deleting group with Id:", params.group_id);
             
             try {
-              const response = await axios.post(url + '/group/delete_group', { groupId }, {
+              const response = await axios.post(url + '/group/delete_group', { group_id }, {
                 headers: {
                   'Content-Type': 'application/json',
                 },
@@ -299,7 +301,7 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
              <View style={styles.buttonContainer}>
              <Pressable
                 style={styles.button} 
-                onPress={() => router.push('/add_product_shopping')}
+                onPress={() => router.push(`/searchbar?group_id=${encodeURIComponent(params.group_id)}`)}
                 >
                  <Ionicons name="add" size={20} color="white" />
                  <Text style={styles.buttonText}>Add Product</Text>
@@ -327,7 +329,7 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
              <View style={styles.buttonContainer}>
                <Pressable
                 style={styles.button} 
-                onPress={() => router.push('/add_product_pantry')}
+                onPress={() => router.push(`/searchbar?group_id=${encodeURIComponent(params.group_id)}`)}
                 >
                  <Ionicons name="add" size={20} color="white" />
                  <Text style={styles.buttonText}>Add Product</Text>
