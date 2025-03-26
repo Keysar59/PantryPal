@@ -32,6 +32,14 @@ export default function AddProduct() {
     router.push("group");
   };
 
+  const handleAddToPantry = async () => {
+    // Add pantry logic here
+    product = {"product_id" : params.product_id, "product_name" : params.product_name, "product_image_url" : params.product_image_url}
+    await communication.addProductToPantry(params.group_id, quantity, product)
+    console.log("Adding %s to pantry", params.product_name);
+    router.push("group");
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.header}>
@@ -91,6 +99,13 @@ export default function AddProduct() {
         >
           <Ionicons name="close-circle" size={20} color="white" />
           <Text style={styles.buttonText}>Cancel</Text>
+        </Pressable>
+        <Pressable 
+          style={[styles.button, styles.pantryButton]} 
+          onPress={handleAddToPantry}
+        >
+          <Ionicons name="home" size={20} color="white" />
+          <Text style={styles.buttonText}>Add to Pantry</Text>
         </Pressable>
         <Pressable 
           style={[styles.button, styles.successButton]} 
@@ -216,7 +231,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 8,
     marginTop: 'auto',
     paddingBottom: 32,
   },
@@ -231,6 +246,9 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: '#FF3B30',
+  },
+  pantryButton: {
+    backgroundColor: '#007AFF',
   },
   successButton: {
     backgroundColor: '#34C759',
