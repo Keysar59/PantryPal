@@ -1,4 +1,5 @@
-import { Text, View, StyleSheet, Pressable, SafeAreaView, useColorScheme, Alert } from "react-native";
+import { Text, View, StyleSheet, Pressable, SafeAreaView, useColorScheme } from "react-native";
+import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
@@ -20,6 +21,7 @@ export default function Home() {
           headers: {
             'Content-Type': 'application/json',
           },
+          withCredentials: true
         });
         console.log("Response to group fetching:", response.data.message);
         setGroups(response.data.groups);
@@ -29,12 +31,12 @@ export default function Home() {
     };
 
     getGroups();
-
+/*
     //THIS SHOULD BE REMOVED THE SECOND THAT THE SERVER ACTUALLY RESPONDS
     setGroups([
       { id: 1, name: "Home"},
       { id: 2, name: "Picnic"},
-    ]);
+    ]);*/
   }, []);
   
   const handleGroupPress = (groupId, groupName) => {

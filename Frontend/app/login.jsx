@@ -4,6 +4,8 @@ import { useRouter } from "expo-router";
 import { Colors } from "../constants/Colors" ;
 import React, { useState } from 'react';
 import axios from 'axios';
+axios.defaults.withCredentials = true;
+
 
 export default function Login() {
   const router = useRouter();
@@ -51,25 +53,23 @@ export default function Login() {
     
     setAwaiting(true);
 
+    const axiosInstance = axios.create({
+      baseURL: url,
+      withCredentials: true,
+    });
+
     try {
-      const response = await axios.post(url + '/auth/login', 
+      const response = await axiosInstance.post(url + '/auth/login', 
         { email, password }, 
         {
           headers: {
             'Content-Type': 'application/json',
           },
-          withCredentials: true, // Enable sending and receiving cookies
+          //withCredentials: true, // Enable sending and receiving cookies
         }
       );
-
-      // Extract and save cookies
-      const cookies = response.headers['set-cookie'];
-      if (cookies) {
-        // Save cookies to AsyncStorage
-        await AsyncStorage.setItem('auth_cookies', JSON.stringify(cookies));
-        console.log('Cookies saved successfully');
-      }
-
+      
+      
       console.log("Response to group fetching:", response.data.message);
       router.push('/home'); // Navigate to home if inputs are valid
     } catch (error) {
