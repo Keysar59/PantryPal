@@ -77,7 +77,7 @@ export default function Home() {
           <Pressable 
             key={group.id} 
             style={[styles.groupCard, { backgroundColor: theme.card }]}
-            onPress={() => handleGroupPress(group.id, group.name)}
+            onPress={() => handleGroupPress(group[0], group[1])}
           >
             <View style={[styles.groupIcon, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#E8F2FF' }]}>
               <Ionicons name="people" size={24} color="#007AFF" />
