@@ -23,6 +23,7 @@ export default function Home() {
           },
           withCredentials: true
         });
+        // console.log("-------------",response.data.groups[0][1]);
         console.log("Response to group fetching:", response.data.message);
         if (response.data.groups)
           setGroups(response.data.groups);
@@ -33,8 +34,9 @@ export default function Home() {
       } catch (error) {
         console.error('Error fetching groups:', error);
       }
+      
     };
-
+    // console.log(response.data.groups);
     getGroups();
 
     //THIS SHOULD BE REMOVED THE SECOND THAT THE SERVER ACTUALLY RESPONDS
@@ -42,7 +44,6 @@ export default function Home() {
   }, []);
   
   const handleGroupPress = (groupId, groupName) => {
-    console.log(groupName);
     router.push(`/group?group_id=${encodeURIComponent(groupId)}&group_name=${encodeURIComponent(groupName)}`);
   };
 
@@ -83,7 +84,7 @@ export default function Home() {
               <Ionicons name="people" size={24} color="#007AFF" />
             </View>
             <View style={styles.groupInfo}>
-              <Text style={[styles.groupName, { color: theme.text }]}>{group.name}</Text>
+              <Text style={[styles.groupName, { color: theme.text }]}>{group[1]}</Text>
             </View>
             <Ionicons name="chevron-forward" size={24} color={theme.secondaryText} />
           </Pressable>
