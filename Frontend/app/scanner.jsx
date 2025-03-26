@@ -11,6 +11,7 @@ export default function Scanner() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const colorScheme = useColorScheme();
+  console.log(params.group_id);
 
   useEffect(() => {
     const getCameraPermissions = async () => {

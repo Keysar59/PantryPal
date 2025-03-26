@@ -9,6 +9,7 @@ const communication = require('../src/services/communication');
 export default function SearchBar() {
   const router = useRouter();
   const params = useLocalSearchParams(); // We are supposed to get a group_id
+  const [error, setError] = useState('');
 
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);

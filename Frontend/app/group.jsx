@@ -28,7 +28,7 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
    const router = useRouter();
    const colorScheme = useColorScheme();
    const params = useLocalSearchParams();
-  //  console.log("ss___________s",params.group_id);
+   console.log("ss___________s",params.group_name);
    const theme = Colors[colorScheme ?? 'light'];
    const { name } = useLocalSearchParams();
    const [activeTab, setActiveTab] = useState("shopping"); // "shopping" or "pantry"
@@ -218,7 +218,7 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
              color="#007AFF"
            />
          </Pressable>
-         <Text style={[styles.title, { color: theme.text }]}>{name}</Text>
+         <Text style={[styles.title, { color: theme.text }]}>{params.group_name}</Text>
        </View>
  
        <View style={[styles.tabContainer, { backgroundColor: theme.tabBackground }]}>
