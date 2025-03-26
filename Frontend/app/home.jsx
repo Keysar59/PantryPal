@@ -38,10 +38,7 @@ export default function Home() {
     getGroups();
 
     //THIS SHOULD BE REMOVED THE SECOND THAT THE SERVER ACTUALLY RESPONDS
-    setGroups([
-      { id: 1, name: "Home"},
-      { id: 2, name: "Picnic"},
-    ]);
+    
   }, []);
   
   const handleGroupPress = (groupId, groupName) => {
