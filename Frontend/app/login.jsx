@@ -91,7 +91,6 @@ export default function Login() {
       setAwaiting(false);
     }
 
-    setError(''); // Clear error if inputs are valid
   };
 
   return (
