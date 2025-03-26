@@ -1,5 +1,5 @@
 import { TextInput, View, StyleSheet, FlatList, Text, Image, TouchableOpacity, Pressable, SafeAreaView, KeyboardAvoidingView, Platform, ActivityIndicator } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import { useColorScheme } from 'react-native';
 import { Colors } from "../constants/Colors";
@@ -102,7 +102,11 @@ export default function SearchBar() {
                   <View style={styles.suggestionContent}>
                     {item.product_image_url ? (
                       <Image source={{ uri: item.product_image_url }} style={styles.suggestionImage} />
-                    ) : null}
+                    ) : (
+                      <View style={[styles.defaultImageContainer, { backgroundColor: theme.border }]}>
+                        <MaterialCommunityIcons name="cart-outline" size={40} color={theme.secondaryText} />
+                      </View>
+                    )}
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.suggestionText, { color: theme.text }]}>{item.product_name}</Text>
                       <Text style={[styles.barcodeText, { color: theme.secondaryText }]}>Barcode: {item.product_id}</Text>
@@ -117,19 +121,40 @@ export default function SearchBar() {
           </View>
         )}
       </View>
-      <View style={[styles.card, { backgroundColor: theme.card, marginTop: suggestions.length > 0 ? 270 : 0 }]}>
-          <Pressable style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleAddProduct}>
-            <Ionicons name="add-outline" size={20} color="white" />
-            <Text style={styles.buttonText}>Add Product to the Pantry</Text>
+      <View style={[styles.buttonContainer, { backgroundColor: theme.card, marginTop: suggestions.length > 0 ? 270 : 0 }]}>
+        <Text style={[styles.buttonSectionTitle, { color: theme.text }]}>
+          Add Product Options
+        </Text>
+        <View style={styles.buttonWrapper}>
+          <Pressable 
+            style={[styles.button, { backgroundColor: theme.primary }]} 
+            onPress={handleAddProduct}
+          >
+            <View style={styles.buttonContent}>
+              <Ionicons name="add-outline" size={24} color="white" />
+              <View style={styles.buttonTextContainer}>
+                <Text style={styles.buttonText}>Add Product</Text>
+                <Text style={styles.buttonSubtext}>Search product by name</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="white" />
+            </View>
           </Pressable>
+          
           <Pressable
-            style={[styles.button, styles.successButton]}
+            style={[styles.button, styles.scanButton]}
             onPress={() => router.push(`/scanner?group_id=${encodeURIComponent(params.group_id)}`)}
-            >
-            <Ionicons name="barcode" size={20} color="white" />
-            <Text style={styles.buttonText}>Scan Barcode</Text>
+          >
+            <View style={styles.buttonContent}>
+              <Ionicons name="barcode-outline" size={24} color="white" />
+              <View style={styles.buttonTextContainer}>
+                <Text style={styles.buttonText}>Scan Barcode</Text>
+                <Text style={styles.buttonSubtext}>Quick add using barcode</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="white" />
+            </View>
           </Pressable>
         </View>
+      </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -194,22 +219,50 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 8,
   },
-  button: {
-    flexDirection: 'row',
+  buttonContainer: {
+    borderRadius: 20,
     padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  successButton: {
-    backgroundColor: '#34C759', 
+  buttonSectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 12,
+    paddingHorizontal: 4,
+  },
+  buttonWrapper: {
+    gap: 12,
+  },
+  button: {
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    paddingVertical: 20,
+  },
+  buttonTextContainer: {
+    flex: 1,
+    marginLeft: 12,
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
-    marginLeft: 8,
+  },
+  buttonSubtext: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 14,
+    marginTop: 2,
+  },
+  scanButton: {
+    backgroundColor: '#34C759',
   },
   header: {
     flexDirection: 'row',
@@ -230,5 +283,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 8,
     flex: 1,
-  }
+  },
+  defaultImageContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

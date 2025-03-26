@@ -1,5 +1,5 @@
 import { View, StyleSheet, FlatList, Text, Image, TouchableOpacity, Pressable, SafeAreaView, ActivityIndicator } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
 import { useColorScheme } from 'react-native';
 import { Colors } from "../constants/Colors";
@@ -128,7 +128,11 @@ export default function ChooseProduct() {
                 <View style={styles.productContent}>
                   {item.product_image_url ? (
                     <Image source={{ uri: item.product_image_url }} style={styles.productImage} />
-                  ) : null}
+                  ) : (
+                    <View style={[styles.defaultImageContainer, { backgroundColor: theme.border }]}>
+                      <MaterialCommunityIcons name="cart-outline" size={40} color={theme.secondaryText} />
+                    </View>
+                  )}
                   <View style={{ flex: 1 }}>
                     <Text style={[styles.productText, { color: theme.text }]}>{item.product_name}</Text>
                     <Text style={[styles.barcodeText, { color: theme.secondaryText }]}>
@@ -320,5 +324,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 12,
     width: 200,
+  },
+  defaultImageContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
