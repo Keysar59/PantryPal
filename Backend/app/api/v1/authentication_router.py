@@ -46,8 +46,8 @@ def setcookie(response, token):
         value=token,
         httponly=False,
         max_age=int(timedelta(weeks=20).total_seconds()),
-        samesite="lax",
-        secure=False,
+        samesite="None",
+        secure=True,
     )
 
 @router.get("/status")
