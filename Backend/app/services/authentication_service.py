@@ -32,10 +32,10 @@ class AuthenticationService:
     
     def login_user(self, user_data: User) -> Optional[str]:
         user = self.user_repository.get_user_by_email(user_data.email)
-        if user.password != user_data.password:
-            raise PasswordIncorrectException()
         if not user:
             raise UserDoesNotExistsException()
+        if user.password != user_data.password:
+            raise PasswordIncorrectException()
         token = self.create_token(user.email)
         return token
 
