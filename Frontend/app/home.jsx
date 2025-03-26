@@ -24,7 +24,12 @@ export default function Home() {
           withCredentials: true
         });
         console.log("Response to group fetching:", response.data.message);
-        setGroups(response.data.groups);
+        if (response.data.groups)
+          setGroups(response.data.groups);
+        else
+        {
+          setGroups([]);
+        }
       } catch (error) {
         console.error('Error fetching groups:', error);
       }
