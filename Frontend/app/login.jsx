@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Pressable, SafeAreaView, TextInput, KeyboardAvoidingView, Platform, useColorScheme } from 'react-native';
+import { Text,Alert, View, StyleSheet, Pressable, SafeAreaView, TextInput, KeyboardAvoidingView, Platform, useColorScheme } from 'react-native';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Colors } from "../constants/Colors" ;
@@ -43,10 +43,7 @@ export default function Login() {
       return;
     }
     if (awaiting){
-      Alert.alert(
-        "Please wait before pressing again",
-        `Still awaiting response.`
-      );
+      setError('Awaiting.');
       console.log("still awaiting response");
       return;
     }

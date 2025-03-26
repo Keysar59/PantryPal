@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter  } from 'expo-router';
 import axios from 'axios';
-
 const SERVER_URL = "https://pantry-pal-git-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1"
 
 export default function AuthPage() {
@@ -31,4 +30,5 @@ export default function AuthPage() {
   }, [router]); // Add router as a dependency
 
   return null; // No UI needed, just redirects
+
 }

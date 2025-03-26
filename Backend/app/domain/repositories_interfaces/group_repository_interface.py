@@ -19,7 +19,7 @@ class GroupRepositoryInterface:
     def demote_admin_to_user(self, group_id: int, user_email: str) -> bool:
         pass
 
-    def get_groups_by_user_email(self, user_email: str) -> list[int]:
+    def get_groups_by_user_email(self, user_email: str) -> list[tuple[int, str]]:
         pass
 
     def get_group_name_by_id(self, group_id: int) -> str:
