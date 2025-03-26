@@ -1,9 +1,11 @@
-import { Text, View, StyleSheet, Pressable, SafeAreaView, TextInput, KeyboardAvoidingView, Platform, useColorScheme } from 'react-native';
+import { Text,Alert, View, StyleSheet, Pressable, SafeAreaView, TextInput, KeyboardAvoidingView, Platform, useColorScheme } from 'react-native';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Colors } from "../constants/Colors" ;
 import React, { useState } from 'react';
 import axios from 'axios';
+axios.defaults.withCredentials = true;
+
 
 export default function Login() {
   const router = useRouter();
@@ -41,27 +43,51 @@ export default function Login() {
       return;
     }
     if (awaiting){
-      Alert.alert(
-        "Please wait before pressing again",
-        `Still awaiting response.`
-      );
+      setError('Awaiting.');
       console.log("still awaiting response");
       return;
     }
+    
+    setAwaiting(true);
+
+    const axiosInstance = axios.create({
+      baseURL: url,
+      withCredentials: true,
+    });
+
     try {
-      const response = await axios.post(url + '/auth/login', { email, password }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axiosInstance.post(url + '/auth/login', 
+        { email, password }, 
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          //withCredentials: true, // Enable sending and receiving cookies
+        }
+      );
+      
+      
       console.log("Response to group fetching:", response.data.message);
       router.push('/home'); // Navigate to home if inputs are valid
     } catch (error) {
-      console.error('Error fetching groups:', error);
-    }finally{
+      console.error('Error during login:', error);
+      
+      // Handle specific error scenarios
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        setError(error.response.data.message || 'Login failed. Please try again.');
+      } else if (error.request) {
+        // The request was made but no response was received
+        setError('No response from server. Please check your connection.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setError('An unexpected error occurred. Please try again.');
+      }
+    } finally {
       setAwaiting(false);
     }
-    setError(''); // Clear error if inputs are valid
+
   };
 
   return (
