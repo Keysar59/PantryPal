@@ -13,7 +13,7 @@ export default function JoinGroup() {
   const [groupId, setGroupId] = useState("");
   const [error, setError] = useState('');
   const [awaiting, setAwaiting] = useState(false);
-  const url = "https://pantry-pal-git-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1";
+  const url = "https://pantry-pal-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1";
 
 
   const validateId = () => {

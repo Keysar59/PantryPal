@@ -11,7 +11,7 @@ export default function Login() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
-  const url = "https://pantry-pal-git-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1";
+  const url = "https://pantry-pal-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1";
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
