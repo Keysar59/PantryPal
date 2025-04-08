@@ -13,7 +13,8 @@ import {
   import { useRouter } from "expo-router";
   import { Colors } from "../constants/Colors" ;
   import React, { useState } from 'react';
-  
+  const communication = require('../src/services/communication');
+
   export default function CreateAccount() {
     const router = useRouter();
     const colorScheme = useColorScheme();
@@ -24,7 +25,7 @@ import {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
   
-    const handleCreateAccount = () => {
+    const handleCreateAccount = async () => {
       
       // Check for empty fields
       if (!email && !password) {
@@ -58,9 +59,29 @@ import {
         return;
       }
   
-      setError(''); // Clear error if inputs are valid
-      // Add your create account logic here
-      router.push('/home'); // Navigate to home or another page after successful account creation
+      try {
+        await communication.signup(email, password);
+        setError('');
+        router.push('/home'); // Navigate to home if inputs are valid
+      } catch (error) {
+        console.error('Error during login:', error);
+        
+        // Handle specific error scenarios
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          setError(error.response.data.message || 'Login failed. Please try again.');
+        } else if (error.request) {
+          // The request was made but no response was received
+          setError('No response from server. Please check your connection.');
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          setError('An unexpected error occurred. Please try again.');
+        }
+      } finally {
+        setAwaiting(false);
+      }
+      
     };
   
     return (

@@ -27,8 +27,7 @@ function deepParseJSON(data) {
  * @returns {Promise<Object>} - The server response as JSON.
  */
 async function communicateWithServer(url, options = {}) {
-  try {
-    const { method = 'GET', headers = {}, body } = options;
+  const { method = 'GET', headers = {}, body } = options;
     const response = await axios({
       url,
       method,
@@ -39,14 +38,81 @@ async function communicateWithServer(url, options = {}) {
     });
 
     return deepParseJSON(response.data);
-  } catch (error) {
-    if (error.response) {
-      console.error(`Server responded with status ${error.response.status}:`, error.response.data);
-    } else {
-      console.error("Error communicating with server:", error.message);
-    }
-    throw error;
-  }
+}
+
+async function checkStatus() {
+  const url = `${BASE_URL}/auth/status`
+  const options = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+    },
+  };
+
+  const result = await communicateWithServer(url, options);
+  return result;
+}
+
+async function login(email, password) {
+  const url = `${BASE_URL}/auth/login`;
+  const payload = { email, password };
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: payload,
+  };
+  console.log("Response to group fetching:", response.data.message);
+  const result = await communicateWithServer(url, options);
+  return result;
+};
+
+async function signup(email, password) {
+  const url = `${BASE_URL}/auth/signup`;
+  const payload = { email, password };
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: payload,
+  };
+  
+  const result = await communicateWithServer(url, options);
+  return result;
+}
+
+async function joinGroup(groupId) {
+  const url = `${BASE_URL}/group/join_group`;
+  const options = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: groupId,
+  };
+  const result = await communicateWithServer(url, options);
+  return result;
+}
+
+async function getGroups() {
+  const url = `${BASE_URL}/group/get_groups`;
+  
+  const options = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+    },
+  };
+
+  const result = await communicateWithServer(url, options);
+  return result;
 }
 
 async function getProductsOptionsByName(name, page = 1) {
@@ -98,4 +164,9 @@ export {
   getProductsOptionsByName,
   getProductByBarcode,
   addProductToList,
+  login,
+  signup,
+  joinGroup,
+  getGroups,
+  checkStatus,
 };

@@ -3,15 +3,14 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Colors } from "../constants/Colors" ;
 import React, { useState } from 'react';
-import axios from 'axios';
-axios.defaults.withCredentials = true;
+const communication = require('../src/services/communication');
 
 
 export default function Login() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
-  const url = "https://pantry-pal-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1";
+  //const url = "https://pantry-pal-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1";
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -50,24 +49,9 @@ export default function Login() {
     
     setAwaiting(true);
 
-    const axiosInstance = axios.create({
-      baseURL: url,
-      withCredentials: true,
-    });
-
     try {
-      const response = await axiosInstance.post(url + '/auth/login', 
-        { email, password }, 
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          //withCredentials: true, // Enable sending and receiving cookies
-        }
-      );
-      
-      
-      console.log("Response to group fetching:", response.data.message);
+      await communication.login(email, password);
+      setError('');
       router.push('/home'); // Navigate to home if inputs are valid
     } catch (error) {
       console.error('Error during login:', error);

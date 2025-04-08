@@ -1,4 +1,4 @@
-import { TextInput, View, StyleSheet, FlatList, Text, Image, TouchableOpacity } from "react-native";
+/*import { TextInput, View, StyleSheet, FlatList, Text, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
 
@@ -163,3 +163,4 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 });
+*/

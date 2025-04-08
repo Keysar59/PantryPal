@@ -35,7 +35,8 @@ export default function AddProduct() {
   const handleAddToPantry = async () => {
     // Add pantry logic here
     product = {"product_id" : params.product_id, "product_name" : params.product_name, "product_image_url" : params.product_image_url}
-    await communication.addProductToPantry(params.group_id, quantity, product)
+    //await communication.addProductToPantry(params.group_id, quantity, product)
+    console.log("endpoint not found... (aka lavi needs to answer)", params.product_name);
     console.log("Adding %s to pantry", params.product_name);
     router.push("group");
   };

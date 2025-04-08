@@ -6,25 +6,20 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 // Define theme colors
 import { Colors } from "../constants/Colors" ;
+const communication = require('../src/services/communication');
 
 export default function Home() {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
   const router = useRouter();
   const [groups, setGroups] = useState([]);
-  const url = "https://pantry-pal-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1";
   
   useEffect(() => {
     const getGroups = async () => {
       try {
-        const response = await axios.get(url + '/group/get_groups', {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          withCredentials: true
-        });
+        const response = await communication.getGroups();
         // console.log("-------------",response.data.groups[0][1]);
-        console.log("Response to group fetching:", response.data.message);
+        //console.log("Response to group fetching:", response.data.message);
         if (response.data.groups)
           setGroups(response.data.groups);
         else

@@ -3,7 +3,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import axios from 'axios';
+const communication = require('../src/services/communication');
 
 
 export default function JoinGroup() {
@@ -13,7 +13,6 @@ export default function JoinGroup() {
   const [groupId, setGroupId] = useState("");
   const [error, setError] = useState('');
   const [awaiting, setAwaiting] = useState(false);
-  const url = "https://pantry-pal-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1";
 
 
   const validateId = () => {
@@ -41,13 +40,11 @@ export default function JoinGroup() {
     }
 
     setAwaiting(true);
+
     try {
-      const response = await axios.post(url + '/group/join_group', { groupId }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log(response);
+      await communication.joinGroup(groupId);
+      setError('');
+      router.push('/home');
     } catch (error) {
       console.error('Error joining group:', error);
     } finally {

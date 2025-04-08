@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://pantry-pal-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1';
+//const BASE_URL = 'https://pantry-pal-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1';
+const BASE_URL = "https://pantry-pal-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1";
 
 /**
  * Communicate with the server by sending an HTTP request using Axios.

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter  } from 'expo-router';
-import axios from 'axios';
-const SERVER_URL = "https://pantry-pal-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1"
+const communication = require('../src/services/communication');
 
 export default function AuthPage() {
   const router = useRouter(); // Use useRouter instead of direct import
@@ -9,12 +8,7 @@ export default function AuthPage() {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        const response = await axios.get(`${SERVER_URL}/auth/status`, {
-          headers: { 'Content-Type': 'application/json' },
-          withCredentials: true,
-        });
-
-        // Ensure response status is checked properly
+        const response = communication.checkStatus();
         if (response.status === 200) {
           router.replace('/home');
         } else {
