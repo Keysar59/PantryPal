@@ -8,7 +8,7 @@ export default function AuthPage() {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        const response = communication.checkStatus();
+        const response = await communication.checkStatus();
         if (response.status === 200) {
           router.replace('/home');
         } else {

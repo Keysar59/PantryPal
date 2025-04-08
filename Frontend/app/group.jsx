@@ -1,9 +1,10 @@
 import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView, useColorScheme, Alert } from "react-native";
- import { useState } from "react";
+ import { useState, useEffect } from "react";
  import { Ionicons } from "@expo/vector-icons";
  import { useLocalSearchParams, useRouter } from "expo-router";
  const [awaiting, setAwaiting] = useState(false);
- import axios from 'axios';
+ const communication = require('../src/services/communication');
+
  // Define theme colors (same as in index.jsx)
  const Colors = {
    light: {
@@ -34,16 +35,31 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
    const [activeTab, setActiveTab] = useState("shopping"); // "shopping" or "pantry"
    const [shoppingSearch, setShoppingSearch] = useState("");
    const [pantrySearch, setPantrySearch] = useState("");
-   const url = "https://pantry-pal-keysar59-dev.apps.rm2.thpm.p1.openshiftapps.com/api/v1";
-   const [shoppingList, setShoppingList] = useState([
-     { id: 1, name: "eggs", quantity: 2 },
-     { id: 2, name: "bread", quantity: 1 },
-     { id: 3, name: "tomatos", quantity: 5 },
-   ]);
-   const [pantryList, setPantryList] = useState([
-     { id: 1, name: "milk", quantity: 2 },
-     { id: 2, name: "cheese", quantity: 1 },
-   ]);
+
+   const [shoppingList, setShoppingList] = useState([]);
+   const [pantryList, setPantryList] = useState([]);
+
+   const fetchLists = async () => {
+    try {
+      const shoppingListId = (await communication.getListsIds(params.group_id)).shopping_list_id;
+      const pantryListId = (await communication.getListsIds(params.group_id)).pantry_list_id;
+      const shoppingResponse = (await communication.getProductsFromList(shoppingListId)).products;
+      const pantryResponse = (await communication.getProductsFromList(pantryListId)).products;
+      
+      setShoppingList(shoppingResponse);
+      setPantryList(pantryResponse);
+    } catch (error) {
+      console.error("Error fetching lists:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchLists();
+    const intervalId = setInterval(fetchLists, 10000); //10 sec
+    return () => clearInterval(intervalId);
+  }, [params.group_id]);
+
+
    // Filter function for both lists
    const getFilteredItems = (items, searchTerm) => {
      return items.filter(item => 
@@ -138,11 +154,7 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
             console.log("Deleting group with Id:", params.group_id);
             
             try {
-              const response = await axios.post(url + '/group/delete_group', { group_id }, {
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              });
+              const response = await communication.deleteGroup(group_id);
               console.log(response);
             } catch (error) {
               console.error('Error deleting group:', error);

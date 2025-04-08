@@ -24,6 +24,7 @@ import {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const [awaiting, setAwaiting] = useState(false);
   
     const handleCreateAccount = async () => {
       
@@ -58,6 +59,13 @@ import {
         setError('Passwords do not match.');
         return;
       }
+      if (awaiting){
+        setError('Awaiting.');
+        console.log("still awaiting response");
+        return;
+      }
+      
+      setAwaiting(true);
   
       try {
         await communication.signup(email, password);

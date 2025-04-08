@@ -65,7 +65,6 @@ async function login(email, password) {
     },
     body: payload,
   };
-  console.log("Response to group fetching:", response.data.message);
   const result = await communicateWithServer(url, options);
   return result;
 };
@@ -159,6 +158,50 @@ async function addProductToList(listId, quantity, product) {
   return result;
 }
 
+async function getListsIds(groupId) {
+  const url = `${BASE_URL}/group/get_list_ids_by_group_id?group_id=${encodeURIComponent(groupId)}`;
+
+  const options = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+    },
+  };
+
+  const result = await communicateWithServer(url, options);
+  return result;
+}
+
+
+async function deleteGroup(groupId) {
+  const url = `${BASE_URL}/group/delete_group?group_id=${encodeURIComponent(groupId)}`;
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+  };
+
+  const result = await communicateWithServer(url, options);
+  return result;
+}
+
+async function getProductsFromList(ListId) {
+  const url = `${BASE_URL}/list/get_products_from_list?list_id=${encodeURIComponent(list_id)}`;
+  const options = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+  };
+
+  const result = await communicateWithServer(url, options);
+  return result;
+}
+
 export {
   communicateWithServer,
   getProductsOptionsByName,
@@ -169,4 +212,7 @@ export {
   joinGroup,
   getGroups,
   checkStatus,
+  getListsIds,
+  deleteGroup,
+  getProductsFromList,
 };

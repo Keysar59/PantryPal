@@ -27,7 +27,8 @@ export default function AddProduct() {
   const handleAdd = async () => {
     // Add product logic here
     product = {"product_id" : params.product_id, "product_name" : params.product_name, "product_image_url" : params.product_image_url}
-    await communication.addProductToList(params.group_id, quantity, product)
+    const shoppingListId = (await communication.getListsIds(params.group_id)).shopping_list_id;
+    await communication.addProductToList(shoppingListId, quantity, product)
     console.log("Adding %s",params.product_name);
     router.push("group");
   };
@@ -35,8 +36,8 @@ export default function AddProduct() {
   const handleAddToPantry = async () => {
     // Add pantry logic here
     product = {"product_id" : params.product_id, "product_name" : params.product_name, "product_image_url" : params.product_image_url}
-    //await communication.addProductToPantry(params.group_id, quantity, product)
-    console.log("endpoint not found... (aka lavi needs to answer)", params.product_name);
+    const pantryListId = (await communication.getListsIds(params.group_id)).pantry_list_id;
+    await communication.addProductToList(pantryListId, quantity, product)
     console.log("Adding %s to pantry", params.product_name);
     router.push("group");
   };

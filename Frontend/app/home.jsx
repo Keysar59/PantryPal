@@ -1,9 +1,8 @@
-import { Text, View, StyleSheet, Pressable, SafeAreaView, useColorScheme } from "react-native";
+import { Text, View, StyleSheet, Pressable, SafeAreaView, useColorScheme, Platform   } from "react-native";
 import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
 // Define theme colors
 import { Colors } from "../constants/Colors" ;
 const communication = require('../src/services/communication');
@@ -14,14 +13,15 @@ export default function Home() {
   const router = useRouter();
   const [groups, setGroups] = useState([]);
   
+  
   useEffect(() => {
     const getGroups = async () => {
       try {
         const response = await communication.getGroups();
         // console.log("-------------",response.data.groups[0][1]);
         //console.log("Response to group fetching:", response.data.message);
-        if (response.data.groups)
-          setGroups(response.data.groups);
+        if (response.groups)
+          setGroups(response.groups);
         else
         {
           setGroups([]);
@@ -43,20 +43,30 @@ export default function Home() {
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to log out?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
-        {
-          text: "OK",
-          onPress: () => router.push("/login")
-        }
-      ]
-    );
+    console.log("handleLogout triggered");
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm("Are you sure you want to log out?");
+      if(confirmed) {
+        router.push("/login");
+      }
+    }
+    else {
+      Alert.alert(
+        "Logout",
+        "Are you sure you want to log out?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel"
+          },
+          {
+            text: "OK",
+            onPress: () => router.push("/login")
+          }
+        ]
+      );
+    }
+    
   };
 
   return (
