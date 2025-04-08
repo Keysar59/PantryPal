@@ -189,7 +189,7 @@ async function deleteGroup(groupId) {
 }
 
 async function getProductsFromList(ListId) {
-  const url = `${BASE_URL}/list/get_products_from_list?list_id=${encodeURIComponent(list_id)}`;
+  const url = `${BASE_URL}/list/get_products_from_list?list_id=${encodeURIComponent(ListId)}`;
   const options = {
     method: 'POST',
     headers: {

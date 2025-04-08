@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Pressable, SafeAreaView, useColorScheme, Platform   } from "react-native";
+import { Text, View, StyleSheet, Pressable, SafeAreaView, useColorScheme, Platform, ActivityIndicator   } from "react-native";
 import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,7 +12,7 @@ export default function Home() {
   const theme = Colors[colorScheme ?? 'light'];
   const router = useRouter();
   const [groups, setGroups] = useState([]);
-  
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     const getGroups = async () => {
@@ -29,7 +29,7 @@ export default function Home() {
       } catch (error) {
         console.error('Error fetching groups:', error);
       }
-      
+      setLoading(false);
     };
     // console.log(response.data.groups);
     getGroups();
@@ -79,21 +79,27 @@ export default function Home() {
       </View>
       
       <View style={styles.groupsContainer}>
-        {groups.map((group) => (
-          <Pressable 
-            key={group.id} 
-            style={[styles.groupCard, { backgroundColor: theme.card }]}
-            onPress={() => handleGroupPress(group[0], group[1])}
-          >
-            <View style={[styles.groupIcon, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#E8F2FF' }]}>
-              <Ionicons name="people" size={24} color="#007AFF" />
-            </View>
-            <View style={styles.groupInfo}>
-              <Text style={[styles.groupName, { color: theme.text }]}>{group[1]}</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={24} color={theme.secondaryText} />
-          </Pressable>
-        ))}
+      {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.text} />
+          </View>
+          ):(
+          groups.map((group) => (
+            <Pressable 
+              key={group.id} 
+              style={[styles.groupCard, { backgroundColor: theme.card }]}
+              onPress={() => handleGroupPress(group[0], group[1])}
+            >
+              <View style={[styles.groupIcon, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#E8F2FF' }]}>
+                <Ionicons name="people" size={24} color="#007AFF" />
+              </View>
+              <View style={styles.groupInfo}>
+                <Text style={[styles.groupName, { color: theme.text }]}>{group[1]}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color={theme.secondaryText} />
+            </Pressable>
+          ))
+        )}
       </View>
       
       <View style={styles.buttonContainer}>

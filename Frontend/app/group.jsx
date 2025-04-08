@@ -1,8 +1,7 @@
-import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView, useColorScheme, Alert } from "react-native";
+import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView, useColorScheme, Alert, ActivityIndicator  } from "react-native";
  import { useState, useEffect } from "react";
  import { Ionicons } from "@expo/vector-icons";
  import { useLocalSearchParams, useRouter } from "expo-router";
- const [awaiting, setAwaiting] = useState(false);
  const communication = require('../src/services/communication');
 
  // Define theme colors (same as in index.jsx)
@@ -36,36 +35,59 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
    const [shoppingSearch, setShoppingSearch] = useState("");
    const [pantrySearch, setPantrySearch] = useState("");
 
+   const [loading, setLoading] = useState(true);
+
+
    const [shoppingList, setShoppingList] = useState([]);
    const [pantryList, setPantryList] = useState([]);
+   const [awaiting, setAwaiting] = useState(false);
 
+
+   const transformProducts = (productsArray) => {
+    return productsArray.map(entry => {
+      const product = entry[0];
+      const quantity = entry[1];
+      return {
+        id: product.product_id,
+        name: product.product_name,
+        image: product.product_image_url,
+        quantity: quantity,
+      };
+    });
+  };
    const fetchLists = async () => {
     try {
-      const shoppingListId = (await communication.getListsIds(params.group_id)).shopping_list_id;
-      const pantryListId = (await communication.getListsIds(params.group_id)).pantry_list_id;
+      const listsIds = await communication.getListsIds(params.group_id);
+      const shoppingListId = listsIds.shopping_list_id;
+      const pantryListId = listsIds.pantry_list_id;
       const shoppingResponse = (await communication.getProductsFromList(shoppingListId)).products;
       const pantryResponse = (await communication.getProductsFromList(pantryListId)).products;
       
-      setShoppingList(shoppingResponse);
-      setPantryList(pantryResponse);
+      setShoppingList(transformProducts(shoppingResponse));
+      setPantryList(transformProducts(pantryResponse));
     } catch (error) {
       console.error("Error fetching lists:", error);
     }
   };
-
+  
   useEffect(() => {
-    fetchLists();
-    const intervalId = setInterval(fetchLists, 10000); //10 sec
+    let intervalId;
+    (async () => {
+      await fetchLists();
+      setLoading(false); 
+      intervalId = setInterval(fetchLists, 10000); // 10 sec
+    })();
+
     return () => clearInterval(intervalId);
   }, [params.group_id]);
 
 
    // Filter function for both lists
-   const getFilteredItems = (items, searchTerm) => {
-     return items.filter(item => 
-       item.name.toLowerCase().includes(searchTerm.toLowerCase())
-     );
-   };
+  const getFilteredItems = (items, searchTerm) => {
+    return items.filter(item => 
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
    // Get the filtered lists based on search terms
    const filteredShoppingList = getFilteredItems(shoppingList, shoppingSearch);
    const filteredPantryList = getFilteredItems(pantryList, pantrySearch);
@@ -298,18 +320,22 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
        <ScrollView style={styles.content}>
          {activeTab === "shopping" ? (
            <>
-             {filteredShoppingList.length > 0 ? (
-               filteredShoppingList.map(item => renderItem(item))
-             ) : (
-               <View style={styles.emptyState}>
-                 <Ionicons name="search" size={48} color="#C7C7CC" />
-                 <Text style={styles.emptyStateText}>
-                   {shoppingSearch 
-                     ? "No matching items found" 
-                     : "Your shopping list is empty"}
-                 </Text>
-               </View>
-             )}
+           {loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={theme.text} />
+              </View>
+            ) : (
+              filteredShoppingList.length > 0 ? (
+                filteredShoppingList.map(item => renderItem(item))
+              ) : (
+                <View style={styles.emptyState}>
+                  <Ionicons name="search" size={48} color="#C7C7CC" />
+                  <Text style={styles.emptyStateText}>
+                    {shoppingSearch ? "No matching items found" : "Your shopping list is empty"}
+                  </Text>
+                </View>
+              )
+            )}
              <View style={styles.buttonContainer}>
              <Pressable
                 style={styles.button} 
@@ -326,18 +352,22 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
            </>
          ) : (
            <>
-             {filteredPantryList.length > 0 ? (
-               filteredPantryList.map(item => renderItem(item, true))
-             ) : (
-               <View style={styles.emptyState}>
-                 <Ionicons name="search" size={48} color="#C7C7CC" />
-                 <Text style={styles.emptyStateText}>
-                   {pantrySearch 
-                     ? "No matching items found" 
-                     : "Your pantry is empty"}
-                 </Text>
-               </View>
-             )}
+             {loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={theme.text} />
+              </View>
+            ) : (
+              filteredPantryList.length > 0 ? (
+                filteredPantryList.map(item => renderItem(item, true))
+              ) : (
+                <View style={styles.emptyState}>
+                  <Ionicons name="search" size={48} color="#C7C7CC" />
+                  <Text style={styles.emptyStateText}>
+                    {pantrySearch ? "No matching items found" : "Your pantry is empty"}
+                  </Text>
+                </View>
+              )
+            )}
              <View style={styles.buttonContainer}>
                <Pressable
                 style={styles.button} 
@@ -468,6 +498,10 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
      padding: 16,
      paddingBottom: 32,
    },
+   loadingContainer: {
+    marginVertical: 20,
+    alignItems: 'center'
+  },
    button: {
      flex: 1,
      flexDirection: 'row',
