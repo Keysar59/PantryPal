@@ -1,8 +1,11 @@
 import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView, useColorScheme, Alert, ActivityIndicator  } from "react-native";
- import { useState, useEffect } from "react";
+ import { useState, useEffect, useCallback, useRef } from "react";
  import { Ionicons } from "@expo/vector-icons";
  import { useLocalSearchParams, useRouter } from "expo-router";
+ import { useFocusEffect } from '@react-navigation/native';
+
  const communication = require('../src/services/communication');
+ const listsIdsRef = useRef({});
 
  // Define theme colors (same as in index.jsx)
  const Colors = {
@@ -60,27 +63,23 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
       };
     });
   };
-   const fetchLists = async () => {
+  const fetchLists = async () => {
     try {
       let ids;
-      if (
-        listsIds === null ||
-        listsIds === undefined ||
-        Object.keys(listsIds).length === 0
-      ) {
+      if (!listsIdsRef.current || Object.keys(listsIdsRef.current).length === 0) {
         ids = await communication.getListsIds(params.group_id);
         setListsIds(ids);
+        listsIdsRef.current = ids;
+      } else {
+        ids = listsIdsRef.current;
       }
-      else
-      {
-        ids = listsIds;
-      }
-      
+    
       const shoppingListId = ids.shopping_list_id;
       const pantryListId = ids.pantry_list_id;
+    
       const shoppingResponse = (await communication.getProductsFromList(shoppingListId)).products;
       const pantryResponse = (await communication.getProductsFromList(pantryListId)).products;
-      
+    
       setShoppingList(transformProducts(shoppingResponse));
       setPantryList(transformProducts(pantryResponse));
     } catch (error) {
@@ -88,16 +87,21 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
     }
   };
   
-  useEffect(() => {
-    let intervalId;
-    (async () => {
-      await fetchLists();
-      setLoading(false); 
-      intervalId = setInterval(fetchLists, 10000); // 10 sec
-    })();
-
-    return () => clearInterval(intervalId);
-  }, [params.group_id]);
+  useFocusEffect(
+    useCallback(() => {
+      let intervalId;
+    
+      const runFetch = async () => {
+        await fetchLists();
+        setLoading(false);
+      };
+    
+      runFetch();
+      intervalId = setInterval(runFetch, 10000);
+    
+      return () => clearInterval(intervalId);
+    }, [params.group_id])
+  );
 
 
    // Filter function for both lists
@@ -110,24 +114,38 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
    const filteredShoppingList = getFilteredItems(shoppingList, shoppingSearch);
    const filteredPantryList = getFilteredItems(pantryList, pantrySearch);
    
-   const updateProductQuantityInList = (itemId, isPantry, inc) =>{
+   const incProductQuantityInList = (itemId, isPantry) =>{
     if (isPantry) {
       setPantryList(currentList =>
-        currentList.map(item => {
-         if (item.id === itemId) {
-           product = buildProductObject(item)
-           return { ...item, quantity: item.quantity + inc };
-         } else {
-           return item;
-         }
-    })
+        currentList.map(item =>
+          item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
+        )
       );
     } else {
       setShoppingList(currentList =>
         currentList.map(item =>
-          item.id === itemId ? { ...item, quantity: item.quantity + inc } : item
-          
+          item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
         )
+      );
+    }
+   }
+
+   const decProductQuantityInList = (itemId, isPantry) =>{
+    if (isPantry) {
+      setPantryList(currentList =>
+        currentList.map(item =>
+          item.id === itemId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        ).filter(item => item.quantity > 0)
+      );
+    } else {
+      setShoppingList(currentList =>
+        currentList.map(item =>
+          item.id === itemId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        ).filter(item => item.quantity > 0)
       );
     }
    }
@@ -138,7 +156,7 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
     if (!productInfo) return;
     const product = buildProductObject(productInfo);
 
-    updateProductQuantityInList(itemId, isPantry, 1);
+    incProductQuantityInList(itemId, isPantry);
     try {
       const listId = isPantry ? listsIds.pantry_list_id : listsIds.shopping_list_id;
       await communication.addProductToList(listId, 1, product);
@@ -151,7 +169,7 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
 
 
   const handleDecrement = async (itemId, isPantry) => {
-    updateProductQuantityInList(itemId, isPantry, -1);
+    decProductQuantityInList(itemId, isPantry);
     try {
       const listId = isPantry ? listsIds.pantry_list_id : listsIds.shopping_list_id;
       await communication.removeProductFromList(listId,itemId ,1);
