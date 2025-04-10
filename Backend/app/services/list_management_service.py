@@ -40,12 +40,12 @@ class ListManagementService:
         """
         products_in_list = self.get_products_from_list(list_id)
 
-        for product_in_list in products_in_list:
-            if product_in_list[0] == product_id:
-                if product_in_list[3] >= quantity:
-                    return self.product_list_repository.remove_product_from_list(list_id, product_id, quantity)
+        # for product_in_list in products_in_list:
+        #     if product_in_list[0] == product_id:
+        #         if product_in_list[3] >= quantity:
+        return self.product_list_repository.remove_product_from_list(list_id, product_id, quantity)
 
-        return False
+        # return False
         
 
 
