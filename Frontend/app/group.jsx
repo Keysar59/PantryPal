@@ -62,13 +62,22 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
   };
    const fetchLists = async () => {
     try {
-      if (listsIds === null || listsIds === undefined || listIds.length === 0)
-      {
-        setListsIds(await communication.getListsIds(params.group_id));
+      let ids;
+      if (
+        listsIds === null ||
+        listsIds === undefined ||
+        Object.keys(listsIds).length === 0
+      ) {
+        ids = await communication.getListsIds(params.group_id);
+        setListsIds(ids);
       }
-        
-      const shoppingListId = listsIds.shopping_list_id;
-      const pantryListId = listsIds.pantry_list_id;
+      else
+      {
+        ids = listsIds;
+      }
+      
+      const shoppingListId = ids.shopping_list_id;
+      const pantryListId = ids.pantry_list_id;
       const shoppingResponse = (await communication.getProductsFromList(shoppingListId)).products;
       const pantryResponse = (await communication.getProductsFromList(pantryListId)).products;
       
