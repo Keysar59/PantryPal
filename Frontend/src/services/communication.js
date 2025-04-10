@@ -202,6 +202,21 @@ async function getProductsFromList(ListId) {
   return result;
 }
 
+async function removeProductFromList(ListId, productId, quantity) {
+const url = `${BASE_URL}/list/remove_product_from_list?list_id=${encodeURIComponent(ListId)}&product_id=${encodeURIComponent(productId)}&quantity=${encodeURIComponent(quantity)}`;
+  const options = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+  };
+
+  const result = await communicateWithServer(url, options);
+  return result;
+}
+
+
 export {
   communicateWithServer,
   getProductsOptionsByName,
@@ -215,4 +230,5 @@ export {
   getListsIds,
   deleteGroup,
   getProductsFromList,
+  removeProductFromList
 };

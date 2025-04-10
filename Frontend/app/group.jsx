@@ -34,14 +34,19 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
    const [activeTab, setActiveTab] = useState("shopping"); // "shopping" or "pantry"
    const [shoppingSearch, setShoppingSearch] = useState("");
    const [pantrySearch, setPantrySearch] = useState("");
-
+   const [listsIds, setListsIds] = useState({});
    const [loading, setLoading] = useState(true);
 
 
    const [shoppingList, setShoppingList] = useState([]);
    const [pantryList, setPantryList] = useState([]);
    const [awaiting, setAwaiting] = useState(false);
-
+   
+   const buildProductObject = (item) => ({
+    product_id: item.id,
+    product_name: item.name,
+    product_image_url: item.image,
+  });
 
    const transformProducts = (productsArray) => {
     return productsArray.map(entry => {
@@ -57,7 +62,11 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
   };
    const fetchLists = async () => {
     try {
-      const listsIds = await communication.getListsIds(params.group_id);
+      if (listsIds === null || listsIds === undefined || listIds.length === 0)
+      {
+        setListsIds(await communication.getListsIds(params.group_id));
+      }
+        
       const shoppingListId = listsIds.shopping_list_id;
       const pantryListId = listsIds.pantry_list_id;
       const shoppingResponse = (await communication.getProductsFromList(shoppingListId)).products;
@@ -91,40 +100,59 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput, SafeAreaView,
    // Get the filtered lists based on search terms
    const filteredShoppingList = getFilteredItems(shoppingList, shoppingSearch);
    const filteredPantryList = getFilteredItems(pantryList, pantrySearch);
-   const handleIncrement = (itemId, isPantry) => {
-     if (isPantry) {
-       setPantryList(currentList =>
-         currentList.map(item =>
-           item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
-         )
-       );
-     } else {
-       setShoppingList(currentList =>
-         currentList.map(item =>
-           item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
-         )
-       );
-     }
-   };
-   const handleDecrement = (itemId, isPantry) => {
-     if (isPantry) {
-       setPantryList(currentList =>
-         currentList.map(item =>
-           item.id === itemId
-             ? { ...item, quantity: item.quantity - 1 }
-             : item
-         ).filter(item => item.quantity > 0)
-       );
-     } else {
-       setShoppingList(currentList =>
-         currentList.map(item =>
-           item.id === itemId
-             ? { ...item, quantity: item.quantity - 1 }
-             : item
-         ).filter(item => item.quantity > 0)
-       );
-     }
-   };
+   
+   const updateProductQuantityInList = (itemId, isPantry, inc) =>{
+    if (isPantry) {
+      setPantryList(currentList =>
+        currentList.map(item => {
+         if (item.id === itemId) {
+           product = buildProductObject(item)
+           return { ...item, quantity: item.quantity + inc };
+         } else {
+           return item;
+         }
+    })
+      );
+    } else {
+      setShoppingList(currentList =>
+        currentList.map(item =>
+          item.id === itemId ? { ...item, quantity: item.quantity + inc } : item
+          
+        )
+      );
+    }
+   }
+
+   const handleIncrement = async (itemId, isPantry) => {
+    let list = isPantry ? pantryList : shoppingList;
+    const productInfo = list.find(item => item.id === itemId);
+    if (!productInfo) return;
+    const product = buildProductObject(productInfo);
+
+    updateProductQuantityInList(itemId, isPantry, 1);
+    try {
+      const listId = isPantry ? listsIds.pantry_list_id : listsIds.shopping_list_id;
+      await communication.addProductToList(listId, 1, product);
+    } catch (error) {
+      updateProductQuantityInList(itemId, isPantry, -1);
+      Alert.alert("Error", "Failed to increment product quantity, please try again.");
+      console.error("Error incrementing product:", error);
+    }
+  };
+
+
+  const handleDecrement = async (itemId, isPantry) => {
+    updateProductQuantityInList(itemId, isPantry, -1);
+    try {
+      const listId = isPantry ? listsIds.pantry_list_id : listsIds.shopping_list_id;
+      await communication.removeProductFromList(listId,itemId ,1);
+    } catch (error) {
+      updateProductQuantityInList(itemId, isPantry, 1);
+      Alert.alert("Error", "Failed to decrement product quantity, please try again.");
+      console.error("Error decrementing product:", error);
+    }
+  };
+
    const handleDelete = (itemId, isPantry) => {
      if (isPantry) {
        setPantryList(currentList =>
