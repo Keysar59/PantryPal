@@ -1,5 +1,6 @@
 from app.domain.entities.group import Group
 from app.domain.repositories_interfaces.group_repository_interface import GroupRepositoryInterface
+from app.domain.exceptions import NoPermissionException, UserNotInGroupException, InvalidParameters
 
 
 class GroupManagementService:
@@ -13,6 +14,12 @@ class GroupManagementService:
         :param group_name: The name of the new group.
         :param user_email: The email of the user creating the group.
         """
+
+        if len(group_name) > 255:
+            raise InvalidParameters("Group name too long.")
+
+        if len(group_name) < 2:
+            raise InvalidParameters("Group name too short.")
 
         new_group_id = self.group_repository.create_group(group_name, user_email)
 
@@ -38,6 +45,12 @@ class GroupManagementService:
         :param user_email: The email of the user to add to the group.
         """
 
+        if group_id // 100000 < 1 or group_id // 100000 > 9:
+            raise InvalidParameters("Invalid group id.")
+
+        if len(user_email) < 1:
+            raise InvalidParameters("Invalid user email.")
+
         group_name = self.get_group_name_by_id(group_id)
 
         return self.group_repository.add_user_to_group(group_id, group_name, user_email)
@@ -50,6 +63,9 @@ class GroupManagementService:
         :param user_email: The email of the user to remove from the group.
         """
 
+        if group_id // 100000 < 1 or group_id // 100000 > 9:
+            raise InvalidParameters("Invalid group id.")
+
         return self.group_repository.remove_user_from_group(group_id, user_email)
         
 
@@ -59,6 +75,12 @@ class GroupManagementService:
         :param group_id: The id of the group.
         :param user_email: The email of the user to promote to admin.
         """
+
+        if group_id // 100000 < 1 or group_id // 100000 > 9:
+            raise InvalidParameters("Invalid group id.")
+
+        if len(user_email) < 1:
+            raise InvalidParameters("Invalid user email.")
 
         return self.group_repository.promote_user_to_admin(group_id, user_email)
 
@@ -70,6 +92,12 @@ class GroupManagementService:
         :param user_email: The email of the admin to demote to user.
         """
 
+        if group_id // 100000 < 1 or group_id // 100000 > 9:
+            raise InvalidParameters("Invalid group id.")
+
+        if len(user_email) < 1:
+            raise InvalidParameters("Invalid user email.")
+
         return self.group_repository.demote_admin_to_user(group_id, user_email)
 
 
@@ -78,6 +106,9 @@ class GroupManagementService:
         Gets all groups a user is in.
         :param user_email: The email of the user.
         """
+
+        if len(user_email) < 1:
+            raise InvalidParameters("Invalid user email.")
 
         return self.group_repository.get_groups_by_user_email(user_email)
 
@@ -88,6 +119,9 @@ class GroupManagementService:
         :param group_id: The id of the group.
         """
 
+        if group_id // 100000 < 1 or group_id // 100000 > 9:
+            raise InvalidParameters("Invalid group id.")
+
         return self.group_repository.get_group_name_by_id(group_id)
 
 
@@ -96,6 +130,9 @@ class GroupManagementService:
         Gets the ids of the lists in a group.
         :param group_id: The id of the group.
         """
+
+        if group_id // 100000 < 1 or group_id // 100000 > 9:
+            raise InvalidParameters("Invalid group id.")
 
         return self.group_repository.get_list_ids_by_group_id(group_id)
 
@@ -106,7 +143,16 @@ class GroupManagementService:
         :param user_email: The email of the user.
         """
 
-        return self.group_repository.in_group(group_id, user_email)
+        if group_id // 100000 < 1 or group_id // 100000 > 9:
+            raise InvalidParameters("Invalid group id.")
+
+        if len(user_email) < 1:
+            raise InvalidParameters("Invalid user email.")
+
+        if not self.group_repository.in_group(group_id, user_email):
+            raise UserNotInGroupException()
+        
+        return True
 
     def is_admin(self, group_id: int, user_email: str) -> bool:
         """
@@ -115,4 +161,13 @@ class GroupManagementService:
         :param user_email: The email of the user.
         """
 
-        return self.group_repository.is_admin(group_id, user_email)
+        if group_id // 100000 < 1 or group_id // 100000 > 9:
+            raise InvalidParameters("Invalid group id.")
+
+        if len(user_email) < 1:
+            raise InvalidParameters("Invalid user email.")
+
+        if not self.group_repository.is_admin(group_id, user_email):
+            raise NoPermissionException
+        
+        return True

@@ -34,3 +34,37 @@ class InvalidTokenException(AppException):
 class PasswordIncorrectException(AppException):
     def __init__(self, message: str = "Password incorrect."):
         super().__init__(status_code=401, detail=message)
+
+# ============================= Group Exceptions =============================
+
+class InvalidParameters(AppException):
+    def __init__(self, message: str = "Invalid Paramaters."):
+        super().__init__(status_code=400, detail=message)
+
+class GroupCreationException(AppException):
+    def __init__(self, message: str = "Failed creating group."):
+        super().__init__(status_code=500, detail=message)
+
+class NonExistentGroupException(AppException):
+    def __init__(self, message: str = "Couldn't find group with matching id."):
+        super().__init__(status_code=404, detail=message)
+
+class UserAlreadyInGroupException(AppException):
+    def __init__(self, message: str = "User is already in group."):
+        super().__init__(status_code=409, detail=message)
+
+class UserNotInGroupException(AppException):
+    def __init__(self, message: str = "User is not in group."):
+        super().__init__(status_code=403, detail=message)
+
+class CannotRemoveCreatorException(AppException):
+    def __init__(self, message: str = "Creator can't be demoted or leave group."):
+        super().__init__(status_code=403, detail=message)
+
+class UserAlreadyAdminException(AppException):
+    def __init__(self, message: str = "User is already an admin."):
+        super().__init__(status_code=409, detail=message)
+
+class NoPermissionException(AppException):
+    def __init__(self, message: str = "No permission."):
+        super().__init__(status_code=403, detail=message)
